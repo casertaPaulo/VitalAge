@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "9825977049",
+    "project_id": "vitalage-site",
+    "storage_bucket": "vitalage-site.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9825977049:android:28aa11c8c84ed758acb4c8",
+        "android_client_info": {
+          "package_name": "br.com.vitalage.vital_age"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9825977049-1vvkbe3vud5o35oc49rhv0n1macic4gm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9uYJd8CA21Kv94LZuHnefHCo7NuF9XWk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9825977049-1vvkbe3vud5o35oc49rhv0n1macic4gm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "9825977049-r00f45agbhg3uf7druboh4npvkljnosj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "br.com.vitalage.vitalAge"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

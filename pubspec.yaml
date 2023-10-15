@@ -1,0 +1,52 @@
+name: vital_age
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  animated_text_kit: ^4.2.2
+  avatar_glow: ^2.0.2
+  chat_gpt_sdk: ^2.2.5
+  cloud_firestore: ^4.9.1
+  dotlottie_loader: ^0.0.3
+  firebase_auth: ^4.7.2
+  firebase_core: ^2.15.0
+  fl_chart: ^0.63.0
+  flutter:
+    sdk: flutter
+  flutter_animate: ^4.2.0
+  flutter_slidable: ^3.0.0
+  flutter_svg: ^2.0.7
+  get: ^4.6.5
+  google_nav_bar: ^5.0.6
+  http: ^1.1.0
+  intl: ^0.18.1
+  lottie: ^2.6.0
+  provider: ^6.0.5
+  simple_animations: ^5.0.2
+  smooth_page_indicator: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets: 
+    - assets/images/
+    - assets/svg/
+
+  fonts:
+    - family: KanitBold
+      fonts:
+        - asset: assets/fonts/Kanit-Bold.ttf
+
+    - family: LEMONMILK
+      fonts:
+        - asset: assets/fonts/LEMONMILK-Regular.otf
+
+
