@@ -14,7 +14,10 @@ import '../models/relatorio.dart';
 class RegistroPage extends StatefulWidget {
   final Batimentos batimentos;
 
-  const RegistroPage({required this.batimentos, super.key});
+  const RegistroPage({
+    required this.batimentos,
+    super.key,
+  });
 
   @override
   State<RegistroPage> createState() => _RegistroPageState();
@@ -44,7 +47,7 @@ class _RegistroPageState extends State<RegistroPage> {
           elevation: 0,
           backgroundColor: Theme.of(context).primaryColor,
           title: Text(
-            '${DateFormat.EEEE().format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
+            '${DateFormat('E').format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
             style: const TextStyle(
               fontSize: 25,
               fontFamily: 'KanitBold',

@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:intl/intl.dart';
+
 import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/util/media_query.dart';
 
 // ignore: must_be_immutable
 class ListaBatimentos extends StatelessWidget {
@@ -12,12 +14,13 @@ class ListaBatimentos extends StatelessWidget {
   late bool isMale;
   late DateTime dateTime;
 
-  ListaBatimentos(
-      {super.key,
-      required this.dateTime,
-      required this.batimentos,
-      required this.idade,
-      required this.isMale});
+  ListaBatimentos({
+    super.key,
+    required this.batimentos,
+    required this.idade,
+    required this.isMale,
+    required this.dateTime,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +42,13 @@ class ListaBatimentos extends StatelessWidget {
 
     // Estilização da widget listaBatimentos
     return SizedBox(
-      height: 120,
+      height: Util.getDeviceType(context) == 'phone' ? 126.0 : 200.0,
       child: Stack(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Container(
-              height: 100,
+              height: 250,
               decoration: BoxDecoration(
                   color: const Color(0xFF1c1a4b),
                   borderRadius: BorderRadius.circular(15),
@@ -63,30 +66,37 @@ class ListaBatimentos extends StatelessWidget {
                   const SizedBox(width: 10),
                   Image.asset(
                     'assets/images/frequencia-cardiaca.png',
-                    height: 70,
+                    height:
+                        Util.getDeviceType(context) == 'phone' ? 70.0 : 140.0,
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '$batimentos',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 50,
-                            fontFamily: "KanitBold"),
+                        '${batimentos}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: Util.getDeviceType(context) == 'phone'
+                              ? 50.0
+                              : 110.0,
+                          fontFamily: "KanitBold",
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                     ],
                   ),
                   Image.asset(
                     'assets/images/coracao.png',
-                    height: 30,
+                    height:
+                        Util.getDeviceType(context) == 'phone' ? 30.0 : 70.0,
                   ),
                   const SizedBox(width: 20),
                   Text(
                     "${DateFormat('E').format(dateTime).capitalizeFirst}\n${dateTime.day}/${dateTime.month}",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize:
+                          Util.getDeviceType(context) == 'phone' ? 20.0 : 35.0,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -101,8 +111,8 @@ class ListaBatimentos extends StatelessWidget {
             child: Align(
               alignment: Alignment.topRight,
               child: Container(
-                width: 120,
-                height: 30,
+                width: Util.getDeviceType(context) == 'phone' ? 120.0 : 140.0,
+                height: Util.getDeviceType(context) == 'phone' ? 30.0 : 40.0,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
@@ -113,7 +123,8 @@ class ListaBatimentos extends StatelessWidget {
                     style: TextStyle(
                       fontFamily: "KanitBold",
                       color: cor,
-                      fontSize: 20,
+                      fontSize:
+                          Util.getDeviceType(context) == 'phone' ? 20.0 : 30.0,
                     ),
                   ),
                 ),

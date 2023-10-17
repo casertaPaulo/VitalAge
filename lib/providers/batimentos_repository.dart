@@ -1,9 +1,11 @@
 import 'dart:collection';
-
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:vital_age/models/batimentos.dart';
 
 class BatimentosRepository extends ChangeNotifier {
+  // Constructor para inicializar 'id' e 'databaseReference'
+
   final List<Batimentos> _batimentos = [
     /*
       Aqui dentro vai as instancia de batimentos
@@ -14,6 +16,20 @@ class BatimentosRepository extends ChangeNotifier {
   // array de batimentos
   UnmodifiableListView<Batimentos> get batimentos =>
       UnmodifiableListView(_batimentos);
+
+  void criarInformacoesNoBanco(
+      DatabaseReference databaseReference, int bpmValue) {
+    final newBPMKey = databaseReference.push().key; // Gera uma chave única
+    final newBPMData = {
+      'bpm': bpmValue,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+
+    if (newBPMKey != null) {
+      // Define as informações no banco
+      databaseReference.child(newBPMKey).set(newBPMData);
+    }
+  }
 
   void addBatimento(Batimentos batimento) {
     _batimentos.add(batimento);

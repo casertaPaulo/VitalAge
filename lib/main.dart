@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:vital_age/pages/teste.dart';
 import 'package:vital_age/providers/bar_data.dart';
 import 'package:vital_age/firebase_options.dart';
 import 'package:vital_age/models/relatorio.dart';
@@ -16,6 +18,9 @@ import 'package:vital_age/widgets/auth_check.dart';
 void main() async {
   // Garente que todo o framework do flutter esteja inicilizado
   WidgetsFlutterBinding.ensureInitialized();
+
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   Intl.defaultLocale = 'pt_BR'; // Inicialize o idioma para 'pt_BR'
   initializeDateFormatting(); // Inicialize os dados de localização
@@ -60,7 +65,7 @@ class MainApp extends StatelessWidget {
           primaryColor: const Color(0xFF1c1a4b),
           colorScheme: ColorScheme.fromSwatch()
               .copyWith(secondary: const Color(0xFF1c1a4b))),
-      home: const AuthCheck(),
+      home: AuthCheck(),
     );
   }
 }

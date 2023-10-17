@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ class AuthException implements Exception {
 
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   User? usuario;
   bool isLoading = true;
 
@@ -83,6 +86,7 @@ class AuthService extends ChangeNotifier {
       nome = data['usuario']; // Atualize a variável 'nome'
       notifyListeners(); // Notifique os ouvintes para atualizar o widget
     } catch (e) {
+      // ignore: avoid_print
       print('Erro ao obter o nome: $e');
     }
   }
