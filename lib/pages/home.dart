@@ -5,8 +5,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:vital_age/models/batimentos.dart';
 import 'package:vital_age/models/relatorio.dart';
+import 'package:vital_age/pages/registro_page.dart';
 import 'package:vital_age/providers/bar_data.dart';
+import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
 import 'package:vital_age/widgets/bar_graph.dart';
@@ -309,12 +312,60 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       child: FirebaseAnimatedList(
         query: databaseReference,
         itemBuilder: (context, snapshot, animation, index) {
-          return ListaBatimentos(
-            batimentos: int.parse(snapshot.child('bpm').value.toString()),
-            idade: Provider.of<Relatorio>(context).idade,
-            isMale: true, // Mudar mais tarde
-            dateTime: DateTime.fromMillisecondsSinceEpoch(
-                int.parse(snapshot.child('timestamp').value.toString())),
+          String uniqueKey = snapshot.key.toString();
+          int batimentos = int.parse(snapshot.child('bpm').value.toString());
+          int idade;
+
+          if (snapshot.child('idade').exists) {
+            idade = int.parse(snapshot.child('idade').value.toString());
+          } else {
+            idade = Provider.of<Relatorio>(context).idade;
+          }
+          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+            int.parse(
+              snapshot.child('timestamp').value.toString(),
+            ),
+          );
+
+          return GestureDetector(
+            onTap: () {
+              Get.to(() => RegistroPage(
+                  uniqueKey: uniqueKey,
+                  batimentos: Batimentos(
+                      batimentos: batimentos,
+                      idade: idade,
+                      isMale: true,
+                      dateTime: dateTime)));
+            },
+            child: Slidable(
+              startActionPane: ActionPane(
+                motion: const DrawerMotion(),
+                children: [
+                  SlidableAction(
+                    backgroundColor: Colors.transparent,
+                    icon: Icons.delete,
+                    foregroundColor: Colors.red,
+                    label: 'Excluir',
+                    spacing: 15,
+                    onPressed: (context) {
+                      Provider.of<BatimentosRepository>(context, listen: false)
+                          .apagaInformacaoNoBanco(databaseReference, uniqueKey);
+                      SnackBarUtil.mostrarSnackBar(
+                          context,
+                          "Registro deletado com sucesso!",
+                          Colors.green,
+                          const Icon(Icons.check));
+                    },
+                  ),
+                ],
+              ),
+              child: ListaBatimentos(
+                batimentos: batimentos,
+                idade: idade,
+                isMale: true, // Mudar mais tarde
+                dateTime: dateTime,
+              ),
+            ),
           );
         },
       ),

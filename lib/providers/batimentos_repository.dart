@@ -17,18 +17,31 @@ class BatimentosRepository extends ChangeNotifier {
   UnmodifiableListView<Batimentos> get batimentos =>
       UnmodifiableListView(_batimentos);
 
-  void criarInformacoesNoBanco(
-      DatabaseReference databaseReference, int bpmValue) {
+  void criarInformacoesNoBanco(DatabaseReference databaseReference,
+      int bpmValue, int idadeValue, String sexoValue) {
     final newBPMKey = databaseReference.push().key; // Gera uma chave única
+    print(newBPMKey);
     final newBPMData = {
       'bpm': bpmValue,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'idade': idadeValue,
+      'sexo': sexoValue
     };
 
     if (newBPMKey != null) {
       // Define as informações no banco
       databaseReference.child(newBPMKey).set(newBPMData);
     }
+  }
+
+  void apagaInformacaoNoBanco(
+      DatabaseReference databaseReference, String uniqueKey) {
+    // Remove o registro
+    databaseReference.child(uniqueKey).remove().then((_) {
+      print('Registro removido com sucesso.');
+    }).catchError((error) {
+      print('Erro ao remover o registro: $error');
+    });
   }
 
   void addBatimento(Batimentos batimento) {

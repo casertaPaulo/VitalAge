@@ -6,7 +6,7 @@ class Relatorio extends ChangeNotifier {
   int _idade = 0;
   double _peso = 0;
   double _altura = 0;
-  String sexo = "";
+  String _sexo = "Masculino";
 
   // Getters & Setters
   int get idade => _idade;
@@ -27,6 +27,16 @@ class Relatorio extends ChangeNotifier {
 
   void setPeso(double peso) {
     _peso = peso;
+  }
+
+  String get sexo => _sexo;
+
+  void setSexo(String sexo) {
+    _sexo = sexo;
+  }
+
+  getSexo() {
+    return _sexo;
   }
 
   double get altura => _altura;

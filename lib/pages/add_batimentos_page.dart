@@ -26,7 +26,8 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
   String defaultAge = "";
   String selectedAge = "";
 
-  String selectedGender = "Masculino";
+  String selectedGender = "";
+  String defaultGender = "";
   bool _isPress = false;
 
   final List<String> ageOptions =
@@ -54,6 +55,7 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
     final double widthSize = MediaQuery.of(context).size.width;
     final double heightSize = MediaQuery.of(context).size.height;
     defaultAge = "${Provider.of<Relatorio>(context).idade}";
+    defaultGender = Provider.of<Relatorio>(context).sexo;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -258,7 +260,7 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                         ),
                                         menuMaxHeight: 300,
                                         borderRadius: BorderRadius.circular(20),
-                                        value: selectedGender,
+                                        value: defaultGender,
                                         onChanged: (newValue) {
                                           setState(() {
                                             selectedGender = newValue!;
@@ -355,16 +357,19 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                       } else {
                                         idadeValue = int.parse(selectedAge);
                                       }
-                                      if (selectedGender == "Masculino") {
-                                        isMale = true;
+                                      String sexoValue;
+                                      if (selectedGender.isEmpty) {
+                                        sexoValue = defaultGender;
                                       } else {
-                                        isMale = false;
+                                        sexoValue = selectedAge;
                                       }
                                       Provider.of<BatimentosRepository>(context,
                                               listen: false)
                                           .criarInformacoesNoBanco(
                                               databaseReference,
-                                              batimentosValue);
+                                              batimentosValue,
+                                              idadeValue,
+                                              sexoValue);
 
                                       voltar();
                                       SnackBarUtil.mostrarSnackBar(

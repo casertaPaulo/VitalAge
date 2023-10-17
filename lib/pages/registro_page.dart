@@ -13,9 +13,11 @@ import '../models/relatorio.dart';
 
 class RegistroPage extends StatefulWidget {
   final Batimentos batimentos;
+  final String uniqueKey;
 
   const RegistroPage({
     required this.batimentos,
+    required this.uniqueKey,
     super.key,
   });
 
@@ -46,12 +48,17 @@ class _RegistroPageState extends State<RegistroPage> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Theme.of(context).primaryColor,
-          title: Text(
-            '${DateFormat('E').format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
-            style: const TextStyle(
-              fontSize: 25,
-              fontFamily: 'KanitBold',
-            ),
+          title: Column(
+            children: [
+              Text(widget.uniqueKey),
+              Text(
+                '${DateFormat('E').format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontFamily: 'KanitBold',
+                ),
+              ),
+            ],
           ),
           centerTitle: true,
           bottom: const TabBar(

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
 import 'package:vital_age/models/relatorio.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
 
 class PerfilPage extends StatefulWidget {
@@ -287,14 +288,14 @@ class _PerfilPageState extends State<PerfilPage> {
                                         ),
                                       ),
                                       Text(
-                                        Provider.of<Relatorio>(context).idade ==
-                                                0
+                                        Provider.of<Relatorio>(context).sexo ==
+                                                ""
                                             ? "N/D"
-                                            : " ${Provider.of<Relatorio>(context).idade}",
+                                            : " ${Provider.of<Relatorio>(context).sexo}",
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .scaffoldBackgroundColor,
-                                          fontSize: 60,
+                                          fontSize: 25,
                                           fontWeight: FontWeight.w900,
                                         ),
                                       ),
@@ -318,6 +319,8 @@ class _PerfilPageState extends State<PerfilPage> {
               alturaSreen()
             else if (_pressIdade)
               idadeScreen()
+            else if (_pressSexo)
+              sexoScreen()
           ],
         ),
       ),
@@ -363,6 +366,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             _pressPeso = false;
                             _pressAltura = false;
                             _pressIdade = false;
+                            _pressSexo = false;
                           });
                         },
                         icon: const Icon(
@@ -513,6 +517,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             _pressPeso = false;
                             _pressAltura = false;
                             _pressIdade = false;
+                            _pressSexo = false;
                           });
                         },
                         icon: const Icon(
@@ -575,7 +580,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                 "Altura atualizada!",
                                 Colors.green,
                                 const Icon(
-                                  Icons.error,
+                                  Icons.check,
                                   color: Colors.white,
                                 ),
                               );
@@ -666,6 +671,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             _pressPeso = false;
                             _pressAltura = false;
                             _pressIdade = false;
+                            _pressSexo = false;
                           });
                         },
                         icon: const Icon(
@@ -728,7 +734,7 @@ class _PerfilPageState extends State<PerfilPage> {
                               "Idade atualizada!",
                               Colors.green,
                               const Icon(
-                                Icons.error,
+                                Icons.check,
                                 color: Colors.white,
                               ),
                             );
@@ -736,6 +742,183 @@ class _PerfilPageState extends State<PerfilPage> {
                             SnackBarUtil.mostrarSnackBar(
                               context,
                               "Erro! Insira a idade corretamente!",
+                              Colors.red,
+                              const Icon(
+                                Icons.error,
+                                color: Colors.white,
+                              ),
+                            );
+                          }
+                        });
+                      },
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 50),
+                      color: const Color(0xFF3c67b4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          Text(
+                            'SALVAR',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'KanitBold',
+                                color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget sexoScreen() {
+    return FadeInUp(
+      duration: 400,
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        builder: (context, scrollController) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.blue,
+                  Theme.of(context).scaffoldBackgroundColor,
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 60),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      decoration: const BoxDecoration(
+                          color: Colors.white, shape: BoxShape.circle),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _pressPeso = false;
+                            _pressAltura = false;
+                            _pressIdade = false;
+                            _pressSexo = false;
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      "Sexo",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(
+                      // Form Adicionar gênero
+                      width: Util.getDeviceType(context) == 'phone'
+                          ? 180.0
+                          : 390.0,
+                      child: DropdownButtonFormField<String>(
+                        dropdownColor: const Color(0xFF3c67b4),
+                        decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFF1c1a4b),
+                          label: const Text('Sexo'),
+                          floatingLabelAlignment: FloatingLabelAlignment.start,
+                          labelStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: Util.getDeviceType(context) == 'phone'
+                                ? 20.0
+                                : 55.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: Util.getDeviceType(context) == 'phone'
+                              ? 25.0
+                              : 55.0,
+                          height: 1.2,
+                          fontFamily: 'KanitBold',
+                        ),
+                        menuMaxHeight: 300,
+                        borderRadius: BorderRadius.circular(20),
+                        value: Provider.of<Relatorio>(context).sexo,
+                        onChanged: (newValue) {
+                          Provider.of<Relatorio>(context, listen: false)
+                              .setSexo(newValue!);
+                        },
+                        items: ['Masculino', 'Feminino']
+                            .map<DropdownMenuItem<String>>(
+                          (String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                    MaterialButton(
+                      // Botão adicionar
+                      onPressed: () {
+                        setState(() {
+                          if (_formKey.currentState!.validate()) {
+                            _pressSexo = false;
+
+                            SnackBarUtil.mostrarSnackBar(
+                              context,
+                              "Sexo atualizado!",
+                              Colors.green,
+                              const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                              ),
+                            );
+                          } else {
+                            SnackBarUtil.mostrarSnackBar(
+                              context,
+                              "Erro! Insira o sexo corretamente!",
                               Colors.red,
                               const Icon(
                                 Icons.error,
