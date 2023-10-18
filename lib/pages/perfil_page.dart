@@ -126,7 +126,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .scaffoldBackgroundColor,
-                                          fontSize: 60,
+                                          fontSize: 45,
                                           fontWeight: FontWeight.w900,
                                         ),
                                       ),
@@ -222,7 +222,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "   Idade",
+                                        "Idade",
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .scaffoldBackgroundColor,
@@ -238,7 +238,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                         style: TextStyle(
                                           color: Theme.of(context)
                                               .scaffoldBackgroundColor,
-                                          fontSize: 60,
+                                          fontSize: 45,
                                           fontWeight: FontWeight.w900,
                                         ),
                                       ),
@@ -339,7 +339,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue,
+                  Theme.of(context).primaryColor,
                   Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
@@ -354,30 +354,33 @@ class _PerfilPageState extends State<PerfilPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _pressPeso = false;
-                            _pressAltura = false;
-                            _pressIdade = false;
-                            _pressSexo = false;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          size: 30,
-                          color: Colors.red,
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            color: Colors.white, shape: BoxShape.circle),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _pressPeso = false;
+                              _pressAltura = false;
+                              _pressIdade = false;
+                              _pressSexo = false;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            size: 30,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
                     const Text(
-                      "Peso",
+                      "Insira\nseu Peso",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -490,7 +493,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue,
+                  Theme.of(context).primaryColor,
                   Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
@@ -505,30 +508,33 @@ class _PerfilPageState extends State<PerfilPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _pressPeso = false;
-                            _pressAltura = false;
-                            _pressIdade = false;
-                            _pressSexo = false;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          size: 30,
-                          color: Colors.red,
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            color: Colors.white, shape: BoxShape.circle),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _pressPeso = false;
+                              _pressAltura = false;
+                              _pressIdade = false;
+                              _pressSexo = false;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            size: 30,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
                     const Text(
-                      "Altura",
+                      "Insira\nsua Altura",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -644,7 +650,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue,
+                  Theme.of(context).primaryColor,
                   Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
@@ -659,30 +665,33 @@ class _PerfilPageState extends State<PerfilPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _pressPeso = false;
-                            _pressAltura = false;
-                            _pressIdade = false;
-                            _pressSexo = false;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          size: 30,
-                          color: Colors.red,
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            color: Colors.white, shape: BoxShape.circle),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _pressPeso = false;
+                              _pressAltura = false;
+                              _pressIdade = false;
+                              _pressSexo = false;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            size: 30,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
                     const Text(
-                      "Idade",
+                      "Insira\nsua Idade",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -797,7 +806,7 @@ class _PerfilPageState extends State<PerfilPage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.blue,
+                  Theme.of(context).primaryColor,
                   Theme.of(context).scaffoldBackgroundColor,
                 ],
               ),
@@ -812,30 +821,33 @@ class _PerfilPageState extends State<PerfilPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: const BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _pressPeso = false;
-                            _pressAltura = false;
-                            _pressIdade = false;
-                            _pressSexo = false;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.close_rounded,
-                          size: 30,
-                          color: Colors.red,
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            color: Colors.white, shape: BoxShape.circle),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _pressPeso = false;
+                              _pressAltura = false;
+                              _pressIdade = false;
+                              _pressSexo = false;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            size: 30,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
                     const Text(
-                      "Sexo",
+                      "Selecione\nseu sexo",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 40,
@@ -845,7 +857,7 @@ class _PerfilPageState extends State<PerfilPage> {
                     SizedBox(
                       // Form Adicionar gênero
                       width: Util.getDeviceType(context) == 'phone'
-                          ? 180.0
+                          ? 500.0
                           : 390.0,
                       child: DropdownButtonFormField<String>(
                         dropdownColor: const Color(0xFF3c67b4),
@@ -862,16 +874,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
-                          fillColor: const Color(0xFF1c1a4b),
-                          label: const Text('Sexo'),
-                          floatingLabelAlignment: FloatingLabelAlignment.start,
-                          labelStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: Util.getDeviceType(context) == 'phone'
-                                ? 20.0
-                                : 55.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          fillColor: Colors.transparent,
                         ),
                         style: TextStyle(
                           color: Colors.white,

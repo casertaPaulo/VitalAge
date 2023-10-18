@@ -29,8 +29,8 @@ class _RegistroPageState extends State<RegistroPage> {
   @override
   void initState() {
     super.initState();
-    //   Provider.of<IAService>(context, listen: false).completeChat(
-    //       "De acordo com pesquisas, uma pessoa com ${widget.batimentos.batimentos} batimentos por minuto, com ${widget.batimentos.idade} anos de idade e do sexo ${widget.batimentos.isMale ? "Masculino" : "Feminino"}, está dentro do ideal ou não?");
+    Provider.of<IAService>(context, listen: false).completeChat(
+        "De acordo a American Heart Association, uma pessoa com ${widget.batimentos.batimentos} batimentos por minuto, com ${widget.batimentos.idade} anos de idade e do sexo ${widget.batimentos.isMale ? "Masculino" : "Feminino"}, está dentro do ideal ou não?");
   }
 
   @override
@@ -48,17 +48,12 @@ class _RegistroPageState extends State<RegistroPage> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Theme.of(context).primaryColor,
-          title: Column(
-            children: [
-              Text(widget.uniqueKey),
-              Text(
-                '${DateFormat('E').format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontFamily: 'KanitBold',
-                ),
-              ),
-            ],
+          title: Text(
+            '${DateFormat('E').format(widget.batimentos.dateTime).capitalizeFirst}  ${widget.batimentos.dateTime.day}/${widget.batimentos.dateTime.month}/${widget.batimentos.dateTime.year} ${widget.batimentos.dateTime.hour}:${widget.batimentos.dateTime.minute}',
+            style: const TextStyle(
+              fontSize: 25,
+              fontFamily: 'KanitBold',
+            ),
           ),
           centerTitle: true,
           bottom: const TabBar(
@@ -325,9 +320,9 @@ class _RegistroPageState extends State<RegistroPage> {
                                 isRepeatingAnimation: false,
                                 animatedTexts: [
                                   TypewriterAnimatedText(
-                                      'Inteligencia artificial no seu resultado',
-                                      speed: const Duration(milliseconds: 100),
-                                      curve: Curves.bounceInOut),
+                                      'Inteligência artificial no seu resultado',
+                                      curve: Curves.linear,
+                                      speed: const Duration(milliseconds: 100)),
                                 ],
                               ),
                             ),
@@ -341,8 +336,10 @@ class _RegistroPageState extends State<RegistroPage> {
                                   value.resposta,
                                   textAlign: TextAlign.justify,
                                   style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
+                                    color: Colors.white70,
+                                    fontSize: 20,
+                                    height: 1.5,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 );
                               },

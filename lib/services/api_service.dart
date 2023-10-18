@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class IAService extends ChangeNotifier {
   String resposta = "Aguarde enquanto sua resposta está sendo gerada...";
   Future<void> completeChat(String message) async {
-    const API_KEY = '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';
+    const API_KEY = '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';
     const MODEL = 'gpt-3.5-turbo';
     const URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -22,7 +22,7 @@ class IAService extends ChangeNotifier {
           {'role': 'user', 'content': message},
         ],
         'temperature': 0.7,
-        'max_tokens': 200,
+        'max_tokens': 500,
       }),
     );
 

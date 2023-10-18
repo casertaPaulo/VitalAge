@@ -291,6 +291,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           initialChildSize: 0.95,
                           minChildSize: 0.1,
                           maxChildSize: 0.95,
+                          snap: true,
                           builder: (context, scrollController) {
                             return Container(
                               decoration: const BoxDecoration(

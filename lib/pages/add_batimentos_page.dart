@@ -451,7 +451,7 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                           builder: (context, scrollController) {
                             return Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 50),
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Container(
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
