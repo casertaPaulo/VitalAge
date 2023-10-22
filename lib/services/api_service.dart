@@ -1,12 +1,13 @@
 // ignore_for_file: constant_identifier_names
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class IAService extends ChangeNotifier {
   String resposta = "Aguarde enquanto sua resposta está sendo gerada...";
   Future<void> completeChat(String message) async {
-    const API_KEY = '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';
+    final apiKey = dotenv.env['OPENAI_API_KEY'];
     const MODEL = 'gpt-3.5-turbo';
     const URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -14,7 +15,7 @@ class IAService extends ChangeNotifier {
       Uri.parse(URL),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $API_KEY',
+        'Authorization': 'Bearer $apiKey',
       },
       body: json.encode({
         'model': MODEL,
