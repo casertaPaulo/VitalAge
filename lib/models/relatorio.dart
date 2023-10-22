@@ -1,23 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:vital_age/services/auth_service.dart';
 
 class Relatorio extends ChangeNotifier {
-  int _idade = 0;
-  double _peso = 0;
-  double _altura = 0;
-  String _sexo = "Masculino";
-
-  // Getters & Setters
-  int get idade => _idade;
-
-  void setIdade(int idade) {
-    _idade = idade;
-  }
-
-  double get peso => _peso;
-
-  getPeso() {
+  getPeso(double peso) {
     if (peso == 0) {
       return "N/D";
     } else {
@@ -25,42 +9,21 @@ class Relatorio extends ChangeNotifier {
     }
   }
 
-  void setPeso(double peso) {
-    _peso = peso;
-  }
-
-  String get sexo => _sexo;
-
-  void setSexo(String sexo) {
-    _sexo = sexo;
-  }
-
-  getSexo() {
-    return _sexo;
-  }
-
-  double get altura => _altura;
-
-  getAltura() {
+  getAltura(double altura) {
     if (altura == 0) {
       return "N/D";
     } else {
-      return "${altura}m";
+      return "${altura.truncate() / 100}m";
     }
   }
 
-  void setAltura(double altura) {
-    _altura = altura;
-  }
-
   // Calcula o IMC
-  calculaIMC() {
-    return _peso / (altura * altura);
+  calculaIMC(double peso, double altura) {
+    return peso / (altura / 100 * altura / 100);
   }
 
   // Retorna o resultado do cálculo do IMC
-  mostraIMC() {
-    double imc = calculaIMC();
+  mostraIMC(double imc) {
     if (imc.isNaN) {
       return "Inf. Insuficientes";
     } else {
@@ -100,8 +63,8 @@ class Relatorio extends ChangeNotifier {
     }
   }
 
-  pesoIdeal(String feedback) {
-    double imc = calculaIMC();
+  pesoIdeal(String feedback, double peso, double altura) {
+    double imc = calculaIMC(peso, altura);
     if (imc.isNaN) {
       return "N/A";
     } else {

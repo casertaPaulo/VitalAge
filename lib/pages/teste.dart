@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vital_age/models/card_batimentos.dart';
+import 'package:vital_age/models/batimento.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 
@@ -15,33 +15,36 @@ class SeuWidget extends StatefulWidget {
 
 class _SeuWidgetState extends State<SeuWidget> {
   BatimentosRepository batimentosRepository = BatimentosRepository();
-  final DatabaseReference databaseReference = FirebaseDatabase.instance
-      .ref()
-      .child('users/UIKjjOLpgcR0wDvrs4znuo28FQ32/heartbeats');
+  late String id;
+  int data = 0;
+  String key = "";
 
-  void criarInformacoesNoBanco(int bpmValue) {
-    final newBPMKey = databaseReference.push().key; // Gera uma chave única
-    final newBPMData = {
-      'bpm': bpmValue,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-    };
+  showData(int data) {
+    this.data = data;
+  }
 
-    if (newBPMKey != null) {
-      // Define as informações no banco
-      databaseReference.child(newBPMKey).set(newBPMData);
-    }
+  @override
+  void initState() {
+    super.initState();
+    id = context.read<AuthService>().usuario!.uid;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Enviar BPM para o Banco de Dados'),
+        title: Text('Teste'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {},
-          child: Text('Registrar BPM no Banco de Dados'),
+        child: Text(
+          'DATA: $data',
+          style: TextStyle(color: Colors.white, fontSize: 30),
         ),
       ),
     );

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/models/relatorio.dart';
+import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
 
@@ -25,10 +26,18 @@ class _PerfilPageState extends State<PerfilPage> {
   bool _pressIdade = false;
   bool _pressSexo = false;
 
+  late String id;
+
+  @override
+  void initState() {
+    super.initState();
+    id = context.read<AuthService>().usuario!.uid;
+    Provider.of<BatimentosRepository>(context, listen: false).clear();
+    context.read<AuthService>().obterDados();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Setando controladores
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -47,12 +56,15 @@ class _PerfilPageState extends State<PerfilPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            "Edite seus \nDados!",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold,
+                          FadeInUp(
+                            duration: 800,
+                            child: const Text(
+                              "Edite seus \nDados!",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 35,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           MaterialButton(
@@ -91,49 +103,54 @@ class _PerfilPageState extends State<PerfilPage> {
                             });
                           },
                           // Container para o PESO
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 170,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Peso",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w900,
+                          child: FadeInUp(
+                            duration: 850,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 170,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(25.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Peso",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        Provider.of<Relatorio>(context)
-                                                    .peso
-                                                    .truncate() ==
-                                                0
-                                            ? "N/D"
-                                            : "${Provider.of<Relatorio>(context).peso.truncate()}",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 45,
-                                          fontWeight: FontWeight.w900,
+                                        Consumer<AuthService>(
+                                          builder: (BuildContext context,
+                                              AuthService value,
+                                              Widget? child) {
+                                            return Text(
+                                              '${value.peso.truncate()}',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor,
+                                                fontSize: 45,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Image.asset("assets/images/escala.png"),
-                                ],
+                                      ],
+                                    ),
+                                    Image.asset("assets/images/escala.png"),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -149,48 +166,53 @@ class _PerfilPageState extends State<PerfilPage> {
                               _pressAltura = !_pressAltura;
                             });
                           },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 170,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Altura",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w900,
+                          child: FadeInUp(
+                            duration: 900,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 170,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(25.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Altura",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        Provider.of<Relatorio>(context)
-                                                    .altura ==
-                                                0
-                                            ? "N/D"
-                                            : "${Provider.of<Relatorio>(context).altura}m",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 45,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Image.asset("assets/images/altura.png"),
-                                ],
+                                        Consumer<AuthService>(builder:
+                                            (BuildContext context,
+                                                AuthService value,
+                                                Widget? child) {
+                                          return Text(
+                                            "${value.altura.truncate() / 100}",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .scaffoldBackgroundColor,
+                                              fontSize: 45,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                    Image.asset("assets/images/altura.png"),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -205,48 +227,57 @@ class _PerfilPageState extends State<PerfilPage> {
                               _pressIdade = true;
                             });
                           },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 170,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Idade",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w900,
+                          child: FadeInUp(
+                            duration: 950,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 170,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(25.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Idade",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        Provider.of<Relatorio>(context).idade ==
-                                                0
-                                            ? "N/D"
-                                            : " ${Provider.of<Relatorio>(context).idade}",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 45,
-                                          fontWeight: FontWeight.w900,
+                                        Consumer<AuthService>(
+                                          builder: (
+                                            BuildContext context,
+                                            AuthService value,
+                                            Widget? child,
+                                          ) {
+                                            return Text(
+                                              "${value.idade}",
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor,
+                                                fontSize: 45,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Image.asset(
-                                      "assets/images/grupo-de-idade.png"),
-                                ],
+                                      ],
+                                    ),
+                                    Image.asset(
+                                        "assets/images/grupo-de-idade.png"),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -262,47 +293,54 @@ class _PerfilPageState extends State<PerfilPage> {
                               _pressSexo = true;
                             });
                           },
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 170,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(25.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Sexo",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w900,
+                          child: FadeInUp(
+                            duration: 1000,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 170,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(25.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Sexo",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .scaffoldBackgroundColor,
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w900,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        Provider.of<Relatorio>(context).sexo ==
-                                                ""
-                                            ? "N/D"
-                                            : " ${Provider.of<Relatorio>(context).sexo}",
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .scaffoldBackgroundColor,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w900,
+                                        Consumer<AuthService>(
+                                          builder: (BuildContext context,
+                                              AuthService value,
+                                              Widget? child) {
+                                            return Text(
+                                              value.sexo,
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .scaffoldBackgroundColor,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Image.asset("assets/images/sexologia.png"),
-                                ],
+                                      ],
+                                    ),
+                                    Image.asset("assets/images/sexologia.png"),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -421,12 +459,14 @@ class _PerfilPageState extends State<PerfilPage> {
                     MaterialButton(
                         // Botão adicionar
                         onPressed: () {
-                          setState(() {
-                            if (_formKey.currentState!.validate()) {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
                               _pressPeso = false;
                               double pesoValue = double.parse(_peso.text);
-                              Provider.of<Relatorio>(context, listen: false)
-                                  .setPeso(pesoValue);
+                              // Função que seta o valor do peso no banco de da
+                              Provider.of<FirebaseService>(context,
+                                      listen: false)
+                                  .salvarPeso(id, pesoValue);
                               SnackBarUtil.mostrarSnackBar(
                                   context,
                                   "Peso atualizado!",
@@ -435,18 +475,19 @@ class _PerfilPageState extends State<PerfilPage> {
                                     Icons.check,
                                     color: Colors.white,
                                   ));
-                            } else {
-                              SnackBarUtil.mostrarSnackBar(
-                                context,
-                                "Erro! Insira o peso corretamente!",
-                                Colors.red,
-                                const Icon(
-                                  Icons.error,
-                                  color: Colors.white,
-                                ),
-                              );
-                            }
-                          });
+                              context.read<AuthService>().obterDados();
+                            });
+                          } else {
+                            SnackBarUtil.mostrarSnackBar(
+                              context,
+                              "Erro! Insira o peso corretamente!",
+                              Colors.red,
+                              const Icon(
+                                Icons.error,
+                                color: Colors.white,
+                              ),
+                            );
+                          }
                         },
                         padding: const EdgeInsets.symmetric(
                             vertical: 15, horizontal: 50),
@@ -559,7 +600,7 @@ class _PerfilPageState extends State<PerfilPage> {
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
-                        hintText: "Insira a altura",
+                        hintText: "Insira a altura em cm",
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
                         contentPadding: EdgeInsets.all(15),
                         filled: false,
@@ -579,8 +620,9 @@ class _PerfilPageState extends State<PerfilPage> {
                             if (_formKey.currentState!.validate()) {
                               _pressAltura = false;
                               double alturaValue = double.parse(_altura.text);
-                              Provider.of<Relatorio>(context, listen: false)
-                                  .setAltura(alturaValue);
+                              Provider.of<FirebaseService>(context,
+                                      listen: false)
+                                  .salvarAltura(id, alturaValue);
                               SnackBarUtil.mostrarSnackBar(
                                 context,
                                 "Altura atualizada!",
@@ -590,6 +632,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                   color: Colors.white,
                                 ),
                               );
+                              context.read<AuthService>().obterDados();
                             } else {
                               SnackBarUtil.mostrarSnackBar(
                                 context,
@@ -736,8 +779,8 @@ class _PerfilPageState extends State<PerfilPage> {
                           if (_formKey.currentState!.validate()) {
                             _pressIdade = false;
                             int idadeValue = int.parse(_idade.text);
-                            Provider.of<Relatorio>(context, listen: false)
-                                .setIdade(idadeValue);
+                            Provider.of<FirebaseService>(context, listen: false)
+                                .salvarIdade(id, idadeValue);
                             SnackBarUtil.mostrarSnackBar(
                               context,
                               "Idade atualizada!",
@@ -747,6 +790,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                 color: Colors.white,
                               ),
                             );
+                            context.read<AuthService>().obterDados();
                           } else {
                             SnackBarUtil.mostrarSnackBar(
                               context,
@@ -886,10 +930,10 @@ class _PerfilPageState extends State<PerfilPage> {
                         ),
                         menuMaxHeight: 300,
                         borderRadius: BorderRadius.circular(20),
-                        value: Provider.of<Relatorio>(context).sexo,
+                        value: Provider.of<AuthService>(context).sexo,
                         onChanged: (newValue) {
-                          Provider.of<Relatorio>(context, listen: false)
-                              .setSexo(newValue!);
+                          Provider.of<FirebaseService>(context, listen: false)
+                              .salvarSexo(id, newValue!);
                         },
                         items: ['Masculino', 'Feminino']
                             .map<DropdownMenuItem<String>>(
@@ -918,6 +962,7 @@ class _PerfilPageState extends State<PerfilPage> {
                                 color: Colors.white,
                               ),
                             );
+                            context.read<AuthService>().obterDados();
                           } else {
                             SnackBarUtil.mostrarSnackBar(
                               context,

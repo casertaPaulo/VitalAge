@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                   text: "Home",
                 ),
                 GButton(
-                  icon: Icons.bar_chart_outlined,
+                  icon: Icons.format_list_bulleted_outlined,
                   text: "Análise",
                 ),
                 GButton(

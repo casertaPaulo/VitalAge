@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/models/relatorio.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
 
@@ -18,31 +18,25 @@ class AddBatimentosPage extends StatefulWidget {
   State<AddBatimentosPage> createState() => _AddBatimentosPageState();
 }
 
-class _AddBatimentosPageState extends State<AddBatimentosPage>
-    with SingleTickerProviderStateMixin {
+class _AddBatimentosPageState extends State<AddBatimentosPage> {
+  // Controladores
   final _batimentos = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool isMale = true;
-  String defaultAge = "";
-  String selectedAge = "";
-
-  String selectedGender = "";
-  String defaultGender = "";
   bool _isPress = false;
-
-  final List<String> ageOptions =
-      List.generate(101, (index) => index.toString());
 
   late String id;
   late DatabaseReference databaseReference;
+  FirebaseService firebaseService = FirebaseService();
 
   @override
   void initState() {
     super.initState();
-    context.read<AuthService>().obterNome();
-    id = context.read<AuthService>().usuario!.uid;
-    databaseReference =
-        FirebaseDatabase.instance.ref().child('users/$id/heartbeats');
+    // Coleta de dados
+    context.read<AuthService>().obterDados();
+
+    // Definindo path e id
+    id = firebaseService.getUserId();
+    databaseReference = firebaseService.getHeartbeatsReference();
   }
 
   // Método para mostrar feedback e voltar para a tela principal
@@ -52,10 +46,10 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
 
   @override
   Widget build(BuildContext context) {
+    // Definindo tamanho da tela
     final double widthSize = MediaQuery.of(context).size.width;
     final double heightSize = MediaQuery.of(context).size.height;
-    defaultAge = "${Provider.of<Relatorio>(context).idade}";
-    defaultGender = Provider.of<Relatorio>(context).sexo;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -139,7 +133,7 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                       Padding(
                         padding: EdgeInsets.symmetric(
                           vertical: Util.getDeviceType(context) == 'phone'
-                              ? 30.0
+                              ? 35.0
                               : 80.0,
                         ),
                         child: Form(
@@ -163,12 +157,14 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                             ? 30.0
                                             : 55.0,
                                   ),
+                                  textAlign: TextAlign.start,
+
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(20),
                                         borderSide: const BorderSide(
                                             color: Colors.white, width: 2)),
-                                    label: const Text("   BPM"),
+                                    label: const Text("BPM"),
                                     floatingLabelAlignment:
                                         FloatingLabelAlignment.center,
                                     labelStyle: const TextStyle(
@@ -200,236 +196,88 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                   },
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical:
-                                          Util.getDeviceType(context) == 'phone'
-                                              ? 20.0
-                                              : 40.0,
-                                    ),
-                                    child: SizedBox(
-                                      // Form Adicionar gênero
-                                      width:
-                                          Util.getDeviceType(context) == 'phone'
-                                              ? 180.0
-                                              : 390.0,
-                                      child: DropdownButtonFormField<String>(
-                                        dropdownColor: const Color(0xFF3c67b4),
-                                        decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF1c1a4b),
-                                          label: const Text('Sexo'),
-                                          floatingLabelAlignment:
-                                              FloatingLabelAlignment.start,
-                                          labelStyle: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                Util.getDeviceType(context) ==
-                                                        'phone'
-                                                    ? 20.0
-                                                    : 55.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              Util.getDeviceType(context) ==
-                                                      'phone'
-                                                  ? 25.0
-                                                  : 55.0,
-                                          height: 1.2,
-                                          fontFamily: 'KanitBold',
-                                        ),
-                                        menuMaxHeight: 300,
-                                        borderRadius: BorderRadius.circular(20),
-                                        value: defaultGender,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedGender = newValue!;
-                                          });
-                                        },
-                                        items: ['Masculino', 'Feminino']
-                                            .map<DropdownMenuItem<String>>(
-                                          (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          },
-                                        ).toList(),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    // Form Adicionar idade
-                                    width:
-                                        Util.getDeviceType(context) == 'phone'
-                                            ? widthSize / 3.5
-                                            : widthSize / 5,
-                                    child: DropdownButtonFormField<String>(
-                                      alignment: Alignment.center,
-                                      dropdownColor: const Color(0xFF3c67b4),
-                                      decoration: InputDecoration(
-                                        focusedBorder: OutlineInputBorder(
-                                            borderSide: const BorderSide(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                        filled: true,
-                                        fillColor: const Color(0xFF1c1a4b),
-                                        label: const Text('Idade'),
-                                        floatingLabelAlignment:
-                                            FloatingLabelAlignment.start,
-                                        labelStyle: TextStyle(
-                                            color: Colors.white,
-                                            fontSize:
-                                                Util.getDeviceType(context) ==
-                                                        'phone'
-                                                    ? 20.0
-                                                    : 50.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize:
-                                              Util.getDeviceType(context) ==
-                                                      'phone'
-                                                  ? 25.0
-                                                  : 50.0,
-                                          height: 1.2,
-                                          fontFamily: 'KanitBold'),
-                                      menuMaxHeight: 300,
-                                      borderRadius: BorderRadius.circular(20),
-                                      value: defaultAge,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          selectedAge = newValue!;
-                                        });
-                                      },
-                                      items: ageOptions
-                                          .map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              MaterialButton(
-                                // Botão adicionar
-                                onPressed: () {
-                                  setState(() {
-                                    if (_formKey.currentState!.validate()) {
-                                      int batimentosValue =
-                                          int.parse(_batimentos.text);
-                                      // ignore: unused_local_variable
-                                      int idadeValue;
-                                      if (selectedAge.isEmpty) {
-                                        idadeValue = int.parse(defaultAge);
-                                      } else {
-                                        idadeValue = int.parse(selectedAge);
-                                      }
-                                      String sexoValue;
-                                      if (selectedGender.isEmpty) {
-                                        sexoValue = defaultGender;
-                                      } else {
-                                        sexoValue = selectedAge;
-                                      }
-                                      Provider.of<BatimentosRepository>(context,
-                                              listen: false)
-                                          .criarInformacoesNoBanco(
-                                              databaseReference,
-                                              batimentosValue,
-                                              idadeValue,
-                                              sexoValue);
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 24.0),
+                                child: MaterialButton(
+                                  // Botão adicionar
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_formKey.currentState!.validate()) {
+                                        // Batimento do formulário
+                                        int batimentosValue =
+                                            int.parse(_batimentos.text);
 
-                                      voltar();
-                                      SnackBarUtil.mostrarSnackBar(
-                                          context,
-                                          "Registro criado com sucesso!",
-                                          Colors.green,
-                                          const Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                          ));
-                                    } else {
-                                      SnackBarUtil.mostrarSnackBar(
-                                          context,
-                                          "Erro ao criar registro!",
-                                          Colors.red,
-                                          const Icon(
-                                            Icons.error,
-                                            color: Colors.white,
-                                          ));
-                                    }
-                                  });
-                                },
-                                padding: EdgeInsets.symmetric(
-                                  vertical:
-                                      Util.getDeviceType(context) == 'phone'
-                                          ? 10.0
-                                          : 20.0,
-                                  horizontal:
-                                      Util.getDeviceType(context) == 'phone'
-                                          ? 50.0
-                                          : 200.0,
-                                ),
-                                color: const Color(0xFF3c67b4),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.check,
-                                      color: Colors.white,
-                                      size:
-                                          Util.getDeviceType(context) == 'phone'
-                                              ? 30.0
-                                              : 40.0,
-                                    ),
-                                    Text(
-                                      'ADICIONAR',
-                                      style: TextStyle(
-                                        fontSize: Util.getDeviceType(context) ==
-                                                'phone'
-                                            ? 20.0
-                                            : 30.0,
-                                        fontFamily: 'KanitBold',
+                                        // Cria registro no banco
+                                        Provider.of<BatimentosRepository>(
+                                                context,
+                                                listen: false)
+                                            .criarInformacoesNoBanco(
+                                          databaseReference,
+                                          batimentosValue,
+                                        );
+
+                                        voltar();
+                                        SnackBarUtil.mostrarSnackBar(
+                                            context,
+                                            "Registro criado com sucesso!",
+                                            Colors.green,
+                                            const Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                            ));
+                                      } else {
+                                        SnackBarUtil.mostrarSnackBar(
+                                            context,
+                                            "Erro ao criar registro!",
+                                            Colors.red,
+                                            const Icon(
+                                              Icons.error,
+                                              color: Colors.white,
+                                            ));
+                                      }
+                                    });
+                                  },
+                                  padding: EdgeInsets.symmetric(
+                                    vertical:
+                                        Util.getDeviceType(context) == 'phone'
+                                            ? 13.0
+                                            : 20.0,
+                                    horizontal:
+                                        Util.getDeviceType(context) == 'phone'
+                                            ? 60.0
+                                            : 200.0,
+                                  ),
+                                  color: const Color(0xFF3c67b4),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Icon(
+                                        Icons.check,
                                         color: Colors.white,
+                                        size: Util.getDeviceType(context) ==
+                                                'phone'
+                                            ? 30.0
+                                            : 40.0,
                                       ),
-                                    ),
-                                  ],
+                                      Text(
+                                        'ADICIONAR',
+                                        style: TextStyle(
+                                          fontSize:
+                                              Util.getDeviceType(context) ==
+                                                      'phone'
+                                                  ? 20.0
+                                                  : 30.0,
+                                          fontFamily: 'KanitBold',
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

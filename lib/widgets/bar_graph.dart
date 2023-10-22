@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class MyBarGraph extends StatefulWidget {
   final List<BarChartGroupData> bars;
@@ -17,7 +16,7 @@ class _MyBarGraphState extends State<MyBarGraph> {
     return SizedBox(
       width: 500,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(25.0),
         child: BarChart(
           BarChartData(
             alignment: BarChartAlignment.start,
@@ -27,6 +26,13 @@ class _MyBarGraphState extends State<MyBarGraph> {
             borderData: FlBorderData(border: Border.all(width: 0)),
             baselineY: 5,
             groupsSpace: 30,
+            barTouchData: BarTouchData(
+              touchTooltipData: BarTouchTooltipData(
+                tooltipBgColor: Colors.white,
+                tooltipPadding: const EdgeInsets.all(12.0),
+                tooltipRoundedRadius: 50,
+              ),
+            ),
             titlesData: const FlTitlesData(
                 bottomTitles: AxisTitles(
                     sideTitles: SideTitles(

@@ -1,22 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:vital_age/pages/teste.dart';
 import 'package:vital_age/providers/bar_data.dart';
 import 'package:vital_age/firebase_options.dart';
 import 'package:vital_age/models/relatorio.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/api_service.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/widgets/auth_check.dart';
 
+Future<void> loadEnvironment() async {
+  await dotenv.load(fileName: ".env");
+}
+
 void main() async {
-  // Garente que todo o framework do flutter esteja inicilizado
+  // Garante que todo o framework do flutter esteja inicilizado
   WidgetsFlutterBinding.ensureInitialized();
 
   // SystemChrome.setPreferredOrientations(
@@ -29,6 +33,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await loadEnvironment();
 
   runApp(MultiProvider(
     providers: [
@@ -46,6 +52,9 @@ void main() async {
       ),
       ChangeNotifierProvider(
         create: (context) => IAService(),
+      ),
+      ChangeNotifierProvider(
+        create: (context) => FirebaseService(),
       ),
     ],
     child: const MainApp(),

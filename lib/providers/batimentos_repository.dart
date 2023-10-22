@@ -1,31 +1,72 @@
+// ignore_for_file: avoid_print
+
 import 'dart:collection';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:vital_age/models/batimentos.dart';
+import 'package:vital_age/models/batimento.dart';
 
 class BatimentosRepository extends ChangeNotifier {
   // Constructor para inicializar 'id' e 'databaseReference'
 
-  final List<Batimentos> _batimentos = [
-    /*
-      Aqui dentro vai as instancia de batimentos
-    */
-  ];
+  final List<Batimento> _batimentos = [];
 
   // Método getter para tornar visível e não modificável a outras classes o
   // array de batimentos
-  UnmodifiableListView<Batimentos> get batimentos =>
+  UnmodifiableListView<Batimento> get batimentos =>
       UnmodifiableListView(_batimentos);
 
-  void criarInformacoesNoBanco(DatabaseReference databaseReference,
-      int bpmValue, int idadeValue, String sexoValue) {
+  void iniciarRepositorio(DatabaseReference databaseReference) {
+    int data;
+    String key;
+
+    // Caso adicione um batimento
+    databaseReference.onChildAdded.listen((DatabaseEvent event) {
+      key = event.snapshot.key.toString();
+      data = int.parse(event.snapshot.child('bpm').value.toString());
+
+      // Verifica se o batimento já está na lista com base no uniqueKey
+      bool batimentoJaExiste =
+          _batimentos.any((batimento) => batimento.uniqueKey == key);
+
+      if (!batimentoJaExiste) {
+        _batimentos.add(
+          Batimento(
+            batimentos: data,
+            idade: 10,
+            isMale: true,
+            dateTime: DateTime.now(),
+            uniqueKey: key,
+          ),
+        );
+        notifyListeners();
+      }
+
+      print("Chave: $key, BPM: $data");
+    });
+
+    // Caso remova um batimento
+    databaseReference.onChildRemoved.listen((DatabaseEvent event) {
+      key = event.snapshot.key.toString();
+      int index =
+          _batimentos.indexWhere((batimento) => batimento.uniqueKey == key);
+      if (index != -1) {
+        _batimentos.removeAt(index);
+        print("Chave removida: $key");
+        notifyListeners();
+      } else {
+        print("Erro");
+      }
+    });
+  }
+
+  // Cria um registro de Batimento no banco de dados (Realtime Database)
+  void criarInformacoesNoBanco(
+      DatabaseReference databaseReference, int bpmValue) {
     final newBPMKey = databaseReference.push().key; // Gera uma chave única
     print(newBPMKey);
     final newBPMData = {
       'bpm': bpmValue,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'idade': idadeValue,
-      'sexo': sexoValue
     };
 
     if (newBPMKey != null) {
@@ -34,6 +75,7 @@ class BatimentosRepository extends ChangeNotifier {
     }
   }
 
+  // Apaga um registro no banco de dados (Realtime Database)
   void apagaInformacaoNoBanco(
       DatabaseReference databaseReference, String uniqueKey) {
     // Remove o registro
@@ -44,14 +86,20 @@ class BatimentosRepository extends ChangeNotifier {
     });
   }
 
-  void addBatimento(Batimentos batimento) {
-    _batimentos.add(batimento);
-    notifyListeners();
+  void clear() {
+    _batimentos.clear();
   }
 
-  void removeBatimento(Batimentos batimento) {
-    _batimentos.remove(batimento);
-    notifyListeners();
+  void removeBatimento(String key) {
+    int index =
+        _batimentos.indexWhere((batimento) => batimento.uniqueKey == key);
+    if (index != -1) {
+      _batimentos.removeAt(index);
+      print("Chave removida: $key");
+      notifyListeners();
+    } else {
+      print("Erro");
+    }
   }
 
   /*
@@ -65,7 +113,7 @@ class BatimentosRepository extends ChangeNotifier {
   // Caso 4: Homens de 18 a 65 anos: 70 a 76 bpm
   // Caso 5: Idosos: mais de 65 anos 50 a 6 bpm
 
-  Color getCorComBaseNoBatimento(int batimentos, int idade, bool isMale) {
+  Color getCorComBaseNoBatimento(int batimentos, int idade, String sexo) {
     if (idade < 5) {
       if (batimentos <= 80) {
         return Colors.red;
@@ -79,7 +127,7 @@ class BatimentosRepository extends ChangeNotifier {
         return Colors.green;
       }
     } else if (idade > 18 && idade <= 65) {
-      if (isMale) {
+      if (sexo == "Masculino") {
         if (batimentos < 73) {
           return Colors.red;
         } else if (batimentos < 78) {
@@ -103,7 +151,7 @@ class BatimentosRepository extends ChangeNotifier {
     return Colors.orange.shade700;
   }
 
-  String getStringComBaseNoBatimento(int batimentos, int idade, bool isMale) {
+  String getStringComBaseNoBatimento(int batimentos, int idade, String sexo) {
     if (idade < 5) {
       if (batimentos <= 80) {
         return " Lento";
@@ -117,7 +165,7 @@ class BatimentosRepository extends ChangeNotifier {
         return " Ideal";
       }
     } else if (idade > 18 && idade <= 65) {
-      if (isMale) {
+      if (sexo == "Masculino") {
         if (batimentos < 73) {
           return " Lento";
         } else if (batimentos < 78) {

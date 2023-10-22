@@ -13,7 +13,7 @@ class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? usuario;
-  bool isLoading = true;
+  bool isLoading = false;
 
   AuthService() {
     _authCheck();
@@ -50,6 +50,8 @@ class AuthService extends ChangeNotifier {
         throw AuthException('A senha é muito fraca!');
       } else if (e.code == 'email-already-in-use') {
         throw AuthException('Este email já está cadastrado');
+      } else {
+        throw AuthException('Ocorreu um erro inesperado');
       }
     }
   }
@@ -59,11 +61,14 @@ class AuthService extends ChangeNotifier {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: senha);
       _getUser();
+      obterDados();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         throw AuthException('Email não encontrado. Cadastre-se.');
       } else if (e.code == 'wrong-password') {
         throw AuthException('Senha incorreta. Tente novamente');
+      } else {
+        throw AuthException('Verifique os dados!');
       }
     }
   }
@@ -73,9 +78,13 @@ class AuthService extends ChangeNotifier {
     _getUser();
   }
 
-  String? nome; // Adicione uma variável para armazenar o nome
+  String? nome;
+  String sexo = "Masculino";
+  double peso = 0;
+  double altura = 0;
+  int idade = 0;
 
-  Future<void> obterNome() async {
+  Future<void> obterDados() async {
     final CollectionReference users =
         FirebaseFirestore.instance.collection('usuarios');
     final String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -83,11 +92,19 @@ class AuthService extends ChangeNotifier {
     try {
       final DocumentSnapshot document = await users.doc(uid).get();
       final data = document.data() as Map<String, dynamic>;
-      nome = data['usuario']; // Atualize a variável 'nome'
-      notifyListeners(); // Notifique os ouvintes para atualizar o widget
+      nome = data['usuario'];
+      notifyListeners();
+      peso = double.parse(data['peso'].toString());
+      notifyListeners();
+      altura = double.parse(data['altura'].toString());
+      notifyListeners();
+      idade = int.parse(data['idade'].toString());
+      notifyListeners();
+      sexo = data['sexo'];
+      notifyListeners();
     } catch (e) {
       // ignore: avoid_print
-      print('Erro ao obter o nome: $e');
+      print('Erro ao obter a altura: $e');
     }
   }
 }

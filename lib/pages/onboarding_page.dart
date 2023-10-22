@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:vital_age/animations/fade_animation.dart';
 import 'package:vital_age/models/onboarding_content.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/util/snack_bar.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -23,6 +26,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   // Definindo lógica de tela de login ou register
   bool isLogin = true;
   bool isRegister = false;
+  bool isLoading = false;
   late String title;
   late String actionButton;
   late String toggleButton;
@@ -64,57 +68,39 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   // Lógica para os métodos de Login ou Registro
   login() async {
+    setState(() => isLoading = true);
     try {
       await context.read<AuthService>().login(email.text, senha.text);
       // ignore: use_build_context_synchronously
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 10),
-              Text(e.message),
-            ],
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+      setState(() => isLoading = false);
+      SnackBarUtil.mostrarSnackBar(
+        context,
+        e.message,
+        Colors.red,
+        const Icon(
+          Icons.error,
+          color: Colors.white,
         ),
       );
     }
   }
 
   registrar() async {
+    setState(() => isLoading = true);
     try {
       await context
           .read<AuthService>()
           .registrar(email.text, senha.text, nome.text);
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 10),
-              Text(e.message),
-            ],
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+      setState(() => isLoading = false);
+      SnackBarUtil.mostrarSnackBar(
+        context,
+        e.message,
+        Colors.red,
+        const Icon(
+          Icons.error,
+          color: Colors.white,
         ),
       );
     }
@@ -412,6 +398,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                                 controller: senha,
                                                 obscureText: obscureText,
                                                 decoration: InputDecoration(
+                                                    errorStyle: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                     suffixIcon: IconButton(
                                                       onPressed: () {
                                                         setState(() {
@@ -470,13 +460,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                           elevation: 4,
                                           highlightColor: Colors.blue,
                                           highlightElevation: 0,
-                                          child: Text(
-                                            actionButton,
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 15,
-                                            ),
-                                          ),
+                                          child: (isLoading)
+                                              ? const Padding(
+                                                  padding: EdgeInsets.all(1),
+                                                  child: SizedBox(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color: Colors.green,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Text(
+                                                  actionButton,
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
                                         ),
                                         TextButton(
                                           onPressed: () {
