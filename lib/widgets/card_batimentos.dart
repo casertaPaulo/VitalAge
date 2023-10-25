@@ -1,26 +1,19 @@
 // NECESSÁRIO REDIMENSIONAMENTO COM MEDIA QUERY
-
 import 'package:flutter/material.dart';
 import 'package:get/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 import 'package:vital_age/util/media_query.dart';
 
-// ignore: must_be_immutable
 class ListaBatimentos extends StatelessWidget {
-  late int batimentos;
-  late int idade;
-  late bool isMale;
-  late DateTime dateTime;
+  final int batimentos;
+  final DateTime dateTime;
 
-  ListaBatimentos({
+  const ListaBatimentos({
     super.key,
     required this.batimentos,
-    required this.idade,
-    required this.isMale,
     required this.dateTime,
   });
 
@@ -34,12 +27,12 @@ class ListaBatimentos extends StatelessWidget {
     // Métodos criados no repositório de batimentos
     Color cor = bpm.getCorComBaseNoBatimento(
       batimentos,
-      idade,
+      authService.idade,
       authService.sexo,
     );
     String velocidadeBatimento = bpm.getStringComBaseNoBatimento(
       batimentos,
-      idade,
+      authService.idade,
       authService.sexo,
     );
 

@@ -51,5 +51,9 @@ flutter:
     - family: LEMONMILK
       fonts:
         - asset: assets/fonts/LEMONMILK-Regular.otf
+    
+    - family: RobotoCondensed
+      fonts:
+        - asset: assets/fonts/RobotoCondensed.ttf
 
 

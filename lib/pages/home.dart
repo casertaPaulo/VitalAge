@@ -302,6 +302,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget listaDeBatimentos() {
     final authService = context.watch<AuthService>();
     final nome = authService.nome;
+    final idade = authService.idade;
+    final sexo = authService.sexo;
 
     return FirebaseAnimatedList(
       defaultChild: const Center(
@@ -319,7 +321,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         // Resgata o valor de batimentos do registro
         int batimentos = int.parse(snapshot.child('bpm').value.toString());
 
-        // Resgata a data de inserção do resgistro
+        // Resgata a data de inserção do registro
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
           int.parse(
             snapshot.child('timestamp').value.toString(),
@@ -327,14 +329,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         );
 
         return GestureDetector(
+          onLongPress: () {},
           onTap: () {
             Get.to(
               () => RegistroPage(
+                sexo: sexo,
+                idade: idade,
                 uniqueKey: uniqueKey,
                 batimento: Batimento(
                   batimentos: batimentos,
-                  idade: authService.idade,
-                  isMale: authService.sexo == "Masculino" ? true : false,
                   dateTime: dateTime,
                   uniqueKey: uniqueKey,
                 ),
@@ -348,10 +351,28 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               children: [
                 SlidableAction(
                   backgroundColor: Colors.transparent,
+                  icon: Icons.star,
+                  foregroundColor: Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                  onPressed: (context) {
+                    Provider.of<BatimentosRepository>(context, listen: false)
+                        .addFavorito(Batimento(
+                            batimentos: batimentos,
+                            dateTime: dateTime,
+                            uniqueKey: uniqueKey));
+
+                    SnackBarUtil.mostrarSnackBar(
+                        context,
+                        "Registro favoritado com sucesso!",
+                        Colors.green,
+                        const Icon(Icons.check));
+                  },
+                ),
+                SlidableAction(
+                  backgroundColor: Colors.transparent,
                   icon: Icons.delete,
                   foregroundColor: Colors.red,
-                  label: 'Excluir',
-                  spacing: 15,
+                  borderRadius: BorderRadius.circular(100),
                   onPressed: (context) {
                     // Apaga o registro onde a key coincidir
                     Provider.of<BatimentosRepository>(context, listen: false)
@@ -370,8 +391,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               duration: 1000,
               child: ListaBatimentos(
                 batimentos: batimentos,
-                idade: authService.idade,
-                isMale: authService.sexo == "Masculino" ? true : false,
                 dateTime: dateTime,
               ),
             ),

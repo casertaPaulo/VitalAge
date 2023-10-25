@@ -9,11 +9,14 @@ class BatimentosRepository extends ChangeNotifier {
   // Constructor para inicializar 'id' e 'databaseReference'
 
   final List<Batimento> _batimentos = [];
+  final List<Batimento> _batimentoFavorito = [];
 
   // Método getter para tornar visível e não modificável a outras classes o
   // array de batimentos
   UnmodifiableListView<Batimento> get batimentos =>
       UnmodifiableListView(_batimentos);
+  UnmodifiableListView<Batimento> get batimentosFavoritos =>
+      UnmodifiableListView(_batimentoFavorito);
 
   void iniciarRepositorio(DatabaseReference databaseReference) {
     int data;
@@ -32,8 +35,6 @@ class BatimentosRepository extends ChangeNotifier {
         _batimentos.add(
           Batimento(
             batimentos: data,
-            idade: 10,
-            isMale: true,
             dateTime: DateTime.now(),
             uniqueKey: key,
           ),
@@ -100,6 +101,11 @@ class BatimentosRepository extends ChangeNotifier {
     } else {
       print("Erro");
     }
+  }
+
+  void addFavorito(Batimento batimento) {
+    _batimentoFavorito.add(batimento);
+    notifyListeners();
   }
 
   /*
@@ -187,5 +193,17 @@ class BatimentosRepository extends ChangeNotifier {
     }
 
     return " Rápido";
+  }
+
+  retornaIdade(int idade) {
+    if (idade > 1 && idade < 12) {
+      return "CRIANÇA";
+    } else if (idade > 12 && idade < 21) {
+      return "JOVEM";
+    } else if (idade > 21 && idade < 65) {
+      return "ADULTO";
+    } else {
+      return "IDOSO";
+    }
   }
 }

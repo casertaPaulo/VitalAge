@@ -1,14 +1,15 @@
 import 'dart:collection';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vital_age/models/batimento.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/services/auth_service.dart';
 
 class BarData extends ChangeNotifier {
   // Instância privada de batimentos repository
   final BatimentosRepository _batimentosRepository;
+  AuthService authService;
 
   // Array de barras do graph
   List<BarChartGroupData> _barData = [];
@@ -19,7 +20,7 @@ class BarData extends ChangeNotifier {
       UnmodifiableListView(_barData);
 
   // Construtor da classe BarData que recebe BatimentosRepository como parâmetro
-  BarData(this._batimentosRepository) {
+  BarData(this._batimentosRepository, this.authService) {
     _batimentosRepository.addListener(_onBatimentosRepositoryChanged);
     _initializeData();
   }
@@ -48,9 +49,7 @@ class BarData extends ChangeNotifier {
               borderRadius: BorderRadius.circular(5),
               width: 25,
               color: _batimentosRepository.getCorComBaseNoBatimento(
-                  batimento.batimentos,
-                  batimento.idade,
-                  batimento.isMale ? "Masculino" : "Feminino")),
+                  batimento.batimentos, authService.idade, authService.sexo)),
         ],
       );
     }).toList();

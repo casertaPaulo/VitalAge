@@ -19,7 +19,7 @@ class Relatorio extends ChangeNotifier {
 
   // Calcula o IMC
   calculaIMC(double peso, double altura) {
-    return peso / (altura / 100 * altura / 100);
+    return peso / ((altura / 100) * (altura / 100));
   }
 
   // Retorna o resultado do cálculo do IMC
@@ -41,7 +41,7 @@ class Relatorio extends ChangeNotifier {
         if (imc < 18.5) {
           return "Baixo peso";
         } else if (imc >= 18.5 && imc < 24.9) {
-          return "Peso normal";
+          return "PESO NORMAL";
         } else if (imc > 25.0 && imc < 29.9) {
           return "Excesso de peso";
         } else if (imc > 30 && imc < 34.9) {
@@ -63,6 +63,34 @@ class Relatorio extends ChangeNotifier {
     }
   }
 
+  //feedback peso
+  feedbackPeso(double imc, int idade) {
+    if (imc.isNaN) {
+      return "Inf. Insuficientes";
+    } else {
+      if (idade <= 65) {
+        // ADULTO
+        if (imc < 18.5) {
+          return "MAGREZA";
+        } else if (imc >= 18.5 && imc < 24.9) {
+          return "NORMAL";
+        } else if (imc > 25.0 && imc < 29.9) {
+          return "SOBREPESO";
+        } else {
+          return "OBESO";
+        }
+      } else {
+        if (imc < 22) {
+          return "BAIXO PESO";
+        } else if (imc > 22 && imc < 27) {
+          return "ADEQUADO OU EUTRÓFICO";
+        } else {
+          return "SOBREPESO";
+        }
+      }
+    }
+  }
+
   pesoIdeal(String feedback, double peso, double altura) {
     double imc = calculaIMC(peso, altura);
     if (imc.isNaN) {
@@ -73,6 +101,18 @@ class Relatorio extends ChangeNotifier {
       } else {
         return "NÃO";
       }
+    }
+  }
+
+  retornaIdade(int idade) {
+    if (idade > 1 && idade < 12) {
+      return "CRIANÇA";
+    } else if (idade > 12 && idade < 21) {
+      return "JOVEM";
+    } else if (idade > 21 && idade < 65) {
+      return "ADULTO";
+    } else {
+      return "IDOSO";
     }
   }
 }
