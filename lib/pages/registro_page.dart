@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -83,12 +80,6 @@ class _RegistroPageState extends State<RegistroPage> {
   retornaHora() {
     // Obter a hora atual
     final currentTime = DateTime.now();
-
-    // Formato de hora (HH:mm)
-    final timeFormat = DateFormat('HH:mm');
-
-    // Converter a hora para uma string formatada
-    final formattedTime = timeFormat.format(currentTime);
 
     // Determinar se é dia, tarde ou noite com base na hora
     if (currentTime.hour >= 6 && currentTime.hour < 12) {

@@ -9,7 +9,7 @@ import 'package:vital_age/services/auth_service.dart';
 class BarData extends ChangeNotifier {
   // Instância privada de batimentos repository
   final BatimentosRepository _batimentosRepository;
-  AuthService authService;
+  AuthService authService = AuthService();
 
   // Array de barras do graph
   List<BarChartGroupData> _barData = [];
@@ -20,7 +20,7 @@ class BarData extends ChangeNotifier {
       UnmodifiableListView(_barData);
 
   // Construtor da classe BarData que recebe BatimentosRepository como parâmetro
-  BarData(this._batimentosRepository, this.authService) {
+  BarData(this._batimentosRepository) {
     _batimentosRepository.addListener(_onBatimentosRepositoryChanged);
     _initializeData();
   }
