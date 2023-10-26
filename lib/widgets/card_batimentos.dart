@@ -48,14 +48,14 @@ class ListaBatimentos extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5), // Cor da sombra
-                    spreadRadius: 2, // Espalhamento da sombra
-                    blurRadius: 5, // Desfoque da sombra
-                    offset: const Offset(0, 5), // Deslocamento para cima
+                    color: Colors.black.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
                   )
                 ]),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 10),
                 Image.asset(
@@ -82,18 +82,18 @@ class ListaBatimentos extends StatelessWidget {
                   'assets/images/coracao.png',
                   height: Util.getDeviceType(context) == 'phone' ? 30.0 : 70.0,
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 5),
                 Text(
                   "${DateFormat('E').format(dateTime).capitalizeFirst}\n${dateTime.day}/${dateTime.month}",
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize:
-                        Util.getDeviceType(context) == 'phone' ? 20.0 : 35.0,
-                    fontWeight: FontWeight.w900,
-                  ),
+                      color: Colors.white,
+                      fontSize:
+                          Util.getDeviceType(context) == 'phone' ? 20.0 : 35.0,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'RobotoCondensed'),
                 ),
                 const SizedBox(
-                  height: 5,
+                  height: 15,
                 )
               ],
             ),
@@ -111,10 +111,11 @@ class ListaBatimentos extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  velocidadeBatimento,
+                  velocidadeBatimento.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: "KanitBold",
+                    fontFamily: "RobotoCondensed",
                     color: cor,
+                    fontWeight: FontWeight.w900,
                     fontSize:
                         Util.getDeviceType(context) == 'phone' ? 20.0 : 30.0,
                   ),

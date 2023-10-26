@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
 class Relatorio extends ChangeNotifier {
-  getPeso(double peso) {
+  mostrarPeso(double peso) {
     if (peso == 0) {
       return "N/D";
     } else {
-      return "$peso kg";
+      return "${peso.truncate()}";
     }
   }
 
-  getAltura(double altura) {
+  mostrarAltura(double altura) {
     if (altura == 0) {
       return "N/D";
     } else {
-      return "${altura.truncate() / 100}m";
+      return "${altura.truncate() / 100}";
     }
   }
 

@@ -160,39 +160,39 @@ class BatimentosRepository extends ChangeNotifier {
   String getStringComBaseNoBatimento(int batimentos, int idade, String sexo) {
     if (idade < 5) {
       if (batimentos <= 80) {
-        return " Lento";
+        return "Lento";
       } else if (batimentos <= 140) {
-        return " Ideal";
+        return "Ideal";
       }
     } else if (idade >= 5 && idade <= 18) {
       if (batimentos <= 80) {
-        return " Lento";
+        return "Lento";
       } else if (batimentos <= 100) {
-        return " Ideal";
+        return "Ideal";
       }
     } else if (idade > 18 && idade <= 65) {
       if (sexo == "Masculino") {
         if (batimentos < 73) {
-          return " Lento";
+          return "Lento";
         } else if (batimentos < 78) {
-          return " Ideal";
+          return "Ideal";
         }
       } else {
         if (batimentos < 70) {
-          return " Lento";
+          return "Lento";
         } else if (batimentos <= 76) {
-          return " Ideal";
+          return "Ideal";
         }
       }
     } else if (idade > 65) {
       if (batimentos < 50) {
-        return " Lento";
+        return "Lento";
       } else if (batimentos <= 60) {
-        return " Ideal";
+        return "Ideal";
       }
     }
 
-    return " Rápido";
+    return "Rápido";
   }
 
   retornaIdade(int idade) {
