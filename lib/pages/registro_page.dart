@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/models/batimento.dart';
+import 'package:vital_age/models/registro_model.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 import 'package:vital_age/util/media_query.dart';
@@ -16,7 +16,7 @@ import '../models/relatorio.dart';
 
 // ignore: must_be_immutable
 class RegistroPage extends StatefulWidget {
-  final Batimento batimento;
+  final Registro registro;
   final String uniqueKey;
   late String? nome;
   late String? sexo;
@@ -26,7 +26,7 @@ class RegistroPage extends StatefulWidget {
     required this.nome,
     required this.sexo,
     required this.idade,
-    required this.batimento,
+    required this.registro,
     required this.uniqueKey,
     super.key,
   });
@@ -99,13 +99,18 @@ class _RegistroPageState extends State<RegistroPage> {
     super.initState();
 
     completeChat(
-        "Me cumprimente: ${widget.nome} e logo após isso faça um relatório: Uma pessoa do sexo ${widget.sexo} de ${widget.idade} anos, com ${widget.batimento.batimentos} batimentos por minuto estando em repouso, é aceitável ou não? Está ideal? Com o que se preocupar?");
+        "Me cumprimente: ${widget.nome} e logo após isso faça um relatório: Uma pessoa do sexo ${widget.sexo} de ${widget.idade} anos, com ${widget.registro.batimentos} batimentos por minuto estando em repouso, é aceitável ou não? Está ideal? Com o que se preocupar?");
   }
 
   @override
   Widget build(BuildContext context) {
     final authService = context.watch<AuthService>();
-    final frequencia = widget.batimento.batimentos;
+    final frequencia = widget.registro.batimentos;
+    final glicose = widget.registro.glicose;
+    final temperatura = widget.registro.temp;
+    final diastolica = widget.registro.diastolica;
+    final sistolica = widget.registro.sistolica;
+    final oxigenacao = widget.registro.oxigenacao;
 
     // Dados do usuário
     final nome = authService.nome;
@@ -135,7 +140,7 @@ class _RegistroPageState extends State<RegistroPage> {
           title: Column(
             children: [
               Text(
-                '${DateFormat('EEEE').format(widget.batimento.dateTime).capitalizeFirst}',
+                '${DateFormat('EEEE').format(widget.registro.dateTime).capitalizeFirst}',
                 style: const TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w900,
@@ -143,7 +148,7 @@ class _RegistroPageState extends State<RegistroPage> {
                 ),
               ),
               Text(
-                '${widget.batimento.dateTime.day}/${widget.batimento.dateTime.month}/${widget.batimento.dateTime.year} ${widget.batimento.dateTime.hour}:${widget.batimento.dateTime.minute}',
+                '${widget.registro.dateTime.day}/${widget.registro.dateTime.month}/${widget.registro.dateTime.year} ${widget.registro.dateTime.hour}:${widget.registro.dateTime.minute}',
                 style: const TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.w900,
@@ -735,6 +740,466 @@ class _RegistroPageState extends State<RegistroPage> {
                                     const SizedBox(
                                       height: 10,
                                     ),
+
+                                    // TERCEIRA LINHA
+                                    Row(
+                                      children: [
+                                        // CONTAINER DE GLICÓSE
+                                        Container(
+                                          height: 180,
+                                          width: (constraints.maxWidth / 2) - 5,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Glicose',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/glicose.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Corpo do Card
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${relatorio.mostrarGlicose(glicose)}',
+                                                      style: const TextStyle(
+                                                        height: 0.8,
+                                                        color: Colors.white,
+                                                        fontSize: 60,
+                                                        fontFamily: 'KanitBold',
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      relatorio.mostrarGlicose(
+                                                                  glicose) ==
+                                                              "N/D"
+                                                          ? ''
+                                                          : 'mg/dL',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 80,
+                                                      height: 20,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.grey
+                                                              .withOpacity(0.5),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      35)),
+                                                      child: const Center(
+                                                        child: Text(
+                                                          'ALTO',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'RobotoCondensed',
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Container(
+                                          height: 180,
+                                          width: (constraints.maxWidth / 2) - 5,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Oxigenação',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/VitalAge.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Corpo do Card
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${relatorio.mostrarOxig(oxigenacao)}',
+                                                      style: const TextStyle(
+                                                        height: 0.8,
+                                                        color: Colors.white,
+                                                        fontSize: 60,
+                                                        fontFamily: 'KanitBold',
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      relatorio.mostrarOxig(
+                                                                  oxigenacao) ==
+                                                              "N/D"
+                                                          ? ''
+                                                          : '%Sp02',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 80,
+                                                      height: 20,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.5),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(35),
+                                                      ),
+                                                      child: const Center(
+                                                        child: Text(
+                                                          'ALTO',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'RobotoCondensed',
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+
+                                    // QUARTA LINHA
+                                    Row(
+                                      children: [
+                                        // CONTAINER DE SISTÓLICA
+                                        Container(
+                                          height: 180,
+                                          width: (constraints.maxWidth / 2) - 5,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Sistólica',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/pressao.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Corpo do Card
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${relatorio.mostrarSiastolica(sistolica)}',
+                                                      style: const TextStyle(
+                                                        height: 0.8,
+                                                        color: Colors.white,
+                                                        fontSize: 60,
+                                                        fontFamily: 'KanitBold',
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      relatorio.mostrarSiastolica(
+                                                                  sistolica) ==
+                                                              "N/D"
+                                                          ? ''
+                                                          : 'mmHg',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 80,
+                                                      height: 20,
+                                                      decoration: BoxDecoration(
+                                                          color: Colors.grey
+                                                              .withOpacity(0.5),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      35)),
+                                                      child: const Center(
+                                                        child: Text(
+                                                          'ALTO',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'RobotoCondensed',
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+
+                                        // Container de Diastólica
+                                        Container(
+                                          height: 180,
+                                          width: (constraints.maxWidth / 2) - 5,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Diastólica',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/pressao.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Corpo do Card
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      '${relatorio.mostrarDiastolica(diastolica)}',
+                                                      style: const TextStyle(
+                                                        height: 0.8,
+                                                        color: Colors.white,
+                                                        fontSize: 60,
+                                                        fontFamily: 'KanitBold',
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      relatorio.mostrarDiastolica(
+                                                                  diastolica) ==
+                                                              "N/D"
+                                                          ? ''
+                                                          : 'mmHg',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 80,
+                                                      height: 20,
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.grey
+                                                            .withOpacity(0.5),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(35),
+                                                      ),
+                                                      child: const Center(
+                                                        child: Text(
+                                                          'ALTO',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontFamily:
+                                                                'RobotoCondensed',
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
                                     Container(
                                       width: constraints.maxWidth,
                                       height: 180,
@@ -1485,7 +1950,7 @@ class _RegistroPageState extends State<RegistroPage> {
   }
 
   Widget rapidoColumn() {
-    final frequencia = widget.batimento.batimentos;
+    final frequencia = widget.registro.batimentos;
     final idade = widget.idade;
     final genero = widget.sexo;
 
@@ -1535,7 +2000,7 @@ class _RegistroPageState extends State<RegistroPage> {
   }
 
   Widget lentoColumn() {
-    final frequencia = widget.batimento.batimentos;
+    final frequencia = widget.registro.batimentos;
     final idade = widget.idade;
     final genero = widget.sexo;
     return Column(
@@ -1584,7 +2049,7 @@ class _RegistroPageState extends State<RegistroPage> {
   }
 
   Widget idealColumn() {
-    final frequencia = widget.batimento.batimentos;
+    final frequencia = widget.registro.batimentos;
     final idade = widget.idade;
     final genero = widget.sexo;
     return Column(

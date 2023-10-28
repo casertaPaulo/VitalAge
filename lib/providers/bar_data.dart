@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:vital_age/models/batimento.dart';
+import 'package:vital_age/models/registro_model.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 
@@ -39,7 +39,7 @@ class BarData extends ChangeNotifier {
   void _initializeData() {
     _barData = _batimentosRepository.batimentos.asMap().entries.map((entry) {
       int index = entry.key;
-      Batimento batimento = entry.value;
+      Registro batimento = entry.value;
 
       return BarChartGroupData(
         x: index + 1,

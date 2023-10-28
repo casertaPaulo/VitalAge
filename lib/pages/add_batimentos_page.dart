@@ -21,6 +21,12 @@ class AddBatimentosPage extends StatefulWidget {
 class _AddBatimentosPageState extends State<AddBatimentosPage> {
   // Controladores
   final _batimentos = TextEditingController();
+  final _oxigenacao = TextEditingController();
+  final _temperatura = TextEditingController();
+  final _glicose = TextEditingController();
+  final _sistolica = TextEditingController();
+  final _diastolica = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
   bool _isPress = false;
 
@@ -59,7 +65,7 @@ class _AddBatimentosPageState extends State<AddBatimentosPage> {
         child: SingleChildScrollView(
           child: SizedBox(
             width: widthSize,
-            height: heightSize,
+            height: heightSize + 50,
             child: Stack(
               children: [
                 Padding(
@@ -138,149 +144,585 @@ class _AddBatimentosPageState extends State<AddBatimentosPage> {
                         ),
                         child: Form(
                           key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: widthSize,
-                                child: TextFormField(
-                                  // Form Adicionar Batimentos
-                                  onTapOutside: (event) =>
-                                      FocusScope.of(context).unfocus(),
-                                  controller: _batimentos,
-                                  keyboardType: TextInputType.number,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        Util.getDeviceType(context) == 'phone'
-                                            ? 30.0
-                                            : 55.0,
-                                  ),
-                                  textAlign: TextAlign.start,
-
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide: const BorderSide(
-                                            color: Colors.white, width: 2)),
-                                    label: const Text("BPM"),
-                                    floatingLabelAlignment:
-                                        FloatingLabelAlignment.center,
-                                    labelStyle: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    prefixIcon: Icon(
-                                      Icons.monitor_heart_outlined,
-                                      size:
-                                          Util.getDeviceType(context) == 'phone'
-                                              ? 40.0
-                                              : 60.0,
-                                      color: Colors.white,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15),
-                                      borderSide: const BorderSide(
-                                          color: Colors.white, width: 2),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color(0xFF1c1a4b),
-                                  ),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'INFORME OS BATIMENTOS';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 24.0),
-                                child: MaterialButton(
-                                  // Botão adicionar
-                                  onPressed: () {
-                                    setState(() {
-                                      if (_formKey.currentState!.validate()) {
-                                        // Batimento do formulário
-                                        int batimentosValue =
-                                            int.parse(_batimentos.text);
-
-                                        // Cria registro no banco
-                                        Provider.of<BatimentosRepository>(
-                                                context,
-                                                listen: false)
-                                            .criarInformacoesNoBanco(
-                                          databaseReference,
-                                          batimentosValue,
-                                        );
-
-                                        voltar();
-                                        SnackBarUtil.mostrarSnackBar(
-                                            context,
-                                            "Registro criado com sucesso!",
-                                            Colors.green,
-                                            const Icon(
-                                              Icons.check,
-                                              color: Colors.white,
-                                            ));
-                                      } else {
-                                        SnackBarUtil.mostrarSnackBar(
-                                            context,
-                                            "Erro ao criar registro!",
-                                            Colors.red,
-                                            const Icon(
-                                              Icons.error,
-                                              color: Colors.white,
-                                            ));
-                                      }
-                                    });
-                                  },
-                                  padding: EdgeInsets.symmetric(
-                                    vertical:
-                                        Util.getDeviceType(context) == 'phone'
-                                            ? 13.0
-                                            : 20.0,
-                                    horizontal:
-                                        Util.getDeviceType(context) == 'phone'
-                                            ? 60.0
-                                            : 200.0,
-                                  ),
-                                  color: const Color(0xFF3c67b4),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Column(
+                                children: [
+                                  Row(
                                     children: [
-                                      Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: Util.getDeviceType(context) ==
-                                                'phone'
-                                            ? 30.0
-                                            : 40.0,
+                                      // CONTAINER DE BATIMENTOS
+                                      Container(
+                                        width: constraints.maxWidth / 2 - 5,
+                                        height: 180,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 25,
+                                                ),
+                                                child: Row(
+                                                  // Cabeçalho do card
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Batimentos',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        fontFamily:
+                                                            'RobotoCondensed',
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                      child: Image.asset(
+                                                        'assets/images/VitalAge.png',
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Text Form Field
+                                              Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            4,
+                                                    child: TextFormField(
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return "Informe os batimentos!";
+                                                        } else {
+                                                          return null;
+                                                        }
+                                                      },
+                                                      controller: _batimentos,
+                                                      onTapOutside: (event) =>
+                                                          FocusScope.of(context)
+                                                              .unfocus(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 50,
+                                                        height: 0.9,
+                                                        fontFamily: 'KanitBold',
+                                                      ),
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        focusedBorder:
+                                                            UnderlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .white),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    'bpm',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      height: 2.5,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                      Text(
-                                        'ADICIONAR',
-                                        style: TextStyle(
-                                          fontSize:
-                                              Util.getDeviceType(context) ==
-                                                      'phone'
-                                                  ? 20.0
-                                                  : 30.0,
-                                          fontFamily: 'KanitBold',
-                                          color: Colors.white,
+                                      const SizedBox(width: 10),
+
+                                      // CONTAINER DE OXIGENAÇÃO
+                                      Container(
+                                        width: constraints.maxWidth / 2 - 5,
+                                        height: 180,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 25,
+                                                ),
+                                                child: Row(
+                                                  // Cabeçalho do card
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Oxigenação',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        fontFamily:
+                                                            'RobotoCondensed',
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                      child: Image.asset(
+                                                        'assets/images/VitalAge.png',
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Text Form Field
+                                              Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            4.5,
+                                                    child: TextFormField(
+                                                      controller: _oxigenacao,
+                                                      onTapOutside: (event) =>
+                                                          FocusScope.of(context)
+                                                              .unfocus(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 50,
+                                                        height: 0.9,
+                                                        fontFamily: 'KanitBold',
+                                                      ),
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        focusedBorder:
+                                                            UnderlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    '%Sp02',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      height: 2.5,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ),
-                            ],
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+
+                                  Row(
+                                    children: [
+                                      // CONTAINER DE SISTÓLICA
+                                      Container(
+                                        width: constraints.maxWidth / 2 - 5,
+                                        height: 180,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 25,
+                                                ),
+                                                child: Row(
+                                                  // Cabeçalho do card
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Sistólica',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        fontFamily:
+                                                            'RobotoCondensed',
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                      child: Image.asset(
+                                                        'assets/images/pressao.png',
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Text Form Field
+                                              Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            4.5,
+                                                    child: TextFormField(
+                                                      controller: _sistolica,
+                                                      onTapOutside: (event) =>
+                                                          FocusScope.of(context)
+                                                              .unfocus(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 50,
+                                                        height: 0.9,
+                                                        fontFamily: 'KanitBold',
+                                                      ),
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        focusedBorder:
+                                                            UnderlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .white),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    'mmHg',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      height: 2.5,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+
+                                      // CONTAINER DE DIASTÓLICA
+                                      Container(
+                                        width: constraints.maxWidth / 2 - 5,
+                                        height: 180,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(35),
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 25,
+                                                ),
+                                                child: Row(
+                                                  // Cabeçalho do card
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Diastólica',
+                                                      style: TextStyle(
+                                                        fontSize: 20,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        fontFamily:
+                                                            'RobotoCondensed',
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                      child: Image.asset(
+                                                        'assets/images/pressao.png',
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+
+                                              // Text Form Field
+                                              Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            4.5,
+                                                    child: TextFormField(
+                                                      controller: _diastolica,
+                                                      onTapOutside: (event) =>
+                                                          FocusScope.of(context)
+                                                              .unfocus(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 50,
+                                                        height: 0.9,
+                                                        fontFamily: 'KanitBold',
+                                                      ),
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        focusedBorder:
+                                                            UnderlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    'mmHg',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      height: 2.5,
+                                                      color:
+                                                          Colors.grey.shade600,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 10),
+
+                                  Container(
+                                    width: constraints.maxWidth,
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(35),
+                                        color: Theme.of(context).primaryColor),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 25,
+                                            ),
+                                            child: Row(
+                                              // Cabeçalho do card
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                const Text(
+                                                  'Glicose',
+                                                  style: TextStyle(
+                                                    fontSize: 25,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w900,
+                                                    fontFamily:
+                                                        'RobotoCondensed',
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 35,
+                                                  child: Image.asset(
+                                                    'assets/images/glicose.png',
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Text Form Field
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width:
+                                                    constraints.maxWidth / 2.5,
+                                                child: TextFormField(
+                                                  controller: _glicose,
+                                                  onTapOutside: (event) =>
+                                                      FocusScope.of(context)
+                                                          .unfocus(),
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 60,
+                                                    height: 0.9,
+                                                    fontFamily: 'KanitBold',
+                                                  ),
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    focusedBorder:
+                                                        UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                'mg/dL',
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  height: 2.5,
+                                                  color: Colors.grey.shade600,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  // Botão de Salvar registros
+                                  MaterialButton(
+                                    color: Colors.white,
+                                    elevation: 2,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(35),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        if (_formKey.currentState!.validate()) {
+                                          // Batimento do formulário
+                                          int batimentosValue =
+                                              int.parse(_batimentos.text);
+
+                                          int oxigenacaoValue =
+                                              int.parse(_oxigenacao.text);
+
+                                          int glicoseValue =
+                                              int.parse(_glicose.text);
+
+                                          int sistolicaValue =
+                                              int.parse(_sistolica.text);
+
+                                          int diastolicaValue =
+                                              int.parse(_diastolica.text);
+
+                                          // Cria registro no banco
+                                          Provider.of<BatimentosRepository>(
+                                                  context,
+                                                  listen: false)
+                                              .criarInformacoesNoBanco(
+                                                  databaseReference,
+                                                  batimentosValue,
+                                                  glicoseValue,
+                                                  oxigenacaoValue,
+                                                  sistolicaValue,
+                                                  diastolicaValue);
+
+                                          voltar();
+                                          SnackBarUtil.mostrarSnackBar(
+                                              context,
+                                              "Registro criado com sucesso!",
+                                              Colors.green,
+                                              const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                              ));
+                                        } else {
+                                          SnackBarUtil.mostrarSnackBar(
+                                              context,
+                                              "Erro ao criar registro!",
+                                              Colors.red,
+                                              const Icon(
+                                                Icons.error,
+                                                color: Colors.white,
+                                              ));
+                                        }
+                                      });
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(18.0),
+                                      child: Text(
+                                        'Salvar',
+                                        style: TextStyle(
+                                          fontFamily: 'RobotoCondensed',
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ),

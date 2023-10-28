@@ -1,6 +1,38 @@
 import 'package:flutter/material.dart';
 
 class Relatorio extends ChangeNotifier {
+  mostrarGlicose(int? glicose) {
+    if (glicose == 0) {
+      return "N/D";
+    } else {
+      return "$glicose";
+    }
+  }
+
+  mostrarOxig(int? onix) {
+    if (onix == 0) {
+      return "N/D";
+    } else {
+      return "$onix";
+    }
+  }
+
+  mostrarSiastolica(int? sistolica) {
+    if (sistolica == 0) {
+      return "N/D";
+    } else {
+      return "$sistolica";
+    }
+  }
+
+  mostrarDiastolica(int? diastolica) {
+    if (diastolica == 0) {
+      return "N/D";
+    } else {
+      return "$diastolica";
+    }
+  }
+
   mostrarPeso(double peso) {
     if (peso == 0) {
       return "N/D";

@@ -7,7 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/models/batimento.dart';
+import 'package:vital_age/models/registro_model.dart';
 import 'package:vital_age/pages/registro_page.dart';
 import 'package:vital_age/providers/bar_data.dart';
 import 'package:vital_age/providers/batimentos_repository.dart';
@@ -317,9 +317,37 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       itemBuilder: (context, snapshot, animation, index) {
         // Resgata a chave única do registro
         String uniqueKey = snapshot.key.toString();
+        String batimentos = snapshot.child('bpm').value.toString();
+        String diastolica = snapshot.child('diastolica').value.toString();
+        String glicose = snapshot.child('glicose').value.toString();
+        String oxigenacao = snapshot.child('oxigenacao').value.toString();
+        String sistolica = snapshot.child('sistolica').value.toString();
 
-        // Resgata o valor de batimentos do registro
-        int batimentos = int.parse(snapshot.child('bpm').value.toString());
+        int bpmValue = 0;
+        int diastolicaValue = 0;
+        int glicoseValue = 0;
+        int oxigenacaoValue = 0;
+        int sistolicaValue = 0;
+
+        if (batimentos != 'null') {
+          bpmValue = int.parse(batimentos);
+        }
+
+        if (diastolica != 'null') {
+          diastolicaValue = int.parse(diastolica);
+        }
+
+        if (glicose != 'null') {
+          glicoseValue = int.parse(glicose);
+        }
+
+        if (oxigenacao != 'null') {
+          oxigenacaoValue = int.parse(oxigenacao);
+        }
+
+        if (sistolica != 'null') {
+          sistolicaValue = int.parse(sistolica);
+        }
 
         // Resgata a data de inserção do registro
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -336,8 +364,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 sexo: sexo,
                 idade: idade,
                 uniqueKey: uniqueKey,
-                batimento: Batimento(
-                  batimentos: batimentos,
+                registro: Registro(
+                  diastolica: diastolicaValue,
+                  glicose: glicoseValue,
+                  oxigenacao: oxigenacaoValue,
+                  sistolica: sistolicaValue,
+                  batimentos: bpmValue,
                   dateTime: dateTime,
                   uniqueKey: uniqueKey,
                 ),
@@ -356,8 +388,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(100),
                   onPressed: (context) {
                     Provider.of<BatimentosRepository>(context, listen: false)
-                        .addFavorito(Batimento(
-                            batimentos: batimentos,
+                        .addFavorito(Registro(
+                            batimentos: bpmValue,
                             dateTime: dateTime,
                             uniqueKey: uniqueKey));
 
@@ -390,7 +422,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             child: FadeInUp(
               duration: 1000,
               child: ListaBatimentos(
-                batimentos: batimentos,
+                batimentos: bpmValue,
                 dateTime: dateTime,
               ),
             ),

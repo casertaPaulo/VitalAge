@@ -3,19 +3,19 @@
 import 'dart:collection';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:vital_age/models/batimento.dart';
+import 'package:vital_age/models/registro_model.dart';
 
 class BatimentosRepository extends ChangeNotifier {
   // Constructor para inicializar 'id' e 'databaseReference'
 
-  final List<Batimento> _batimentos = [];
-  final List<Batimento> _batimentoFavorito = [];
+  final List<Registro> _batimentos = [];
+  final List<Registro> _batimentoFavorito = [];
 
   // Método getter para tornar visível e não modificável a outras classes o
   // array de batimentos
-  UnmodifiableListView<Batimento> get batimentos =>
+  UnmodifiableListView<Registro> get batimentos =>
       UnmodifiableListView(_batimentos);
-  UnmodifiableListView<Batimento> get batimentosFavoritos =>
+  UnmodifiableListView<Registro> get batimentosFavoritos =>
       UnmodifiableListView(_batimentoFavorito);
 
   void iniciarRepositorio(DatabaseReference databaseReference) {
@@ -33,7 +33,7 @@ class BatimentosRepository extends ChangeNotifier {
 
       if (!batimentoJaExiste) {
         _batimentos.add(
-          Batimento(
+          Registro(
             batimentos: data,
             dateTime: DateTime.now(),
             uniqueKey: key,
@@ -62,12 +62,22 @@ class BatimentosRepository extends ChangeNotifier {
 
   // Cria um registro de Batimento no banco de dados (Realtime Database)
   void criarInformacoesNoBanco(
-      DatabaseReference databaseReference, int bpmValue) {
+    DatabaseReference databaseReference,
+    int bpmValue,
+    int? glicose,
+    int? oxigenacao,
+    int? sistolica,
+    int? diastolica,
+  ) {
     final newBPMKey = databaseReference.push().key; // Gera uma chave única
     print(newBPMKey);
     final newBPMData = {
       'bpm': bpmValue,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'glicose': glicose,
+      'oxigenacao': oxigenacao,
+      'sistolica': sistolica,
+      'diastolica': diastolica
     };
 
     if (newBPMKey != null) {
@@ -103,7 +113,7 @@ class BatimentosRepository extends ChangeNotifier {
     }
   }
 
-  void addFavorito(Batimento batimento) {
+  void addFavorito(Registro batimento) {
     _batimentoFavorito.add(batimento);
     notifyListeners();
   }
