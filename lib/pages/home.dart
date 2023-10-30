@@ -10,7 +10,7 @@ import 'package:vital_age/animations/fade_animation.dart';
 import 'package:vital_age/models/registro_model.dart';
 import 'package:vital_age/pages/registro_page.dart';
 import 'package:vital_age/providers/bar_data.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
@@ -29,6 +29,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   late TabController _tabController;
+  bool _showGrid = false;
   late String id;
   late DatabaseReference databaseReference;
   FirebaseService firebaseService = FirebaseService();
@@ -251,6 +252,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     listaDeBatimentos(),
 
                     // Gráfico
+
                     graficoDeBatimentos(),
                   ],
                 ),
@@ -433,19 +435,38 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget graficoDeBatimentos() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Consumer<BarData>(
-          builder: (context, value, child) {
-            return MyBarGraph(
-              bars: value.barData,
-              cor: Colors.green,
-            );
-          },
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Consumer<BarData>(
+              builder: (context, value, child) {
+                return MyBarGraph(
+                  showGrid: _showGrid,
+                  bars: value.barData,
+                  cor: Colors.green,
+                );
+              },
+            ),
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Align(
+            alignment: Alignment.topRight,
+            child: FloatingActionButton(
+              onPressed: () {
+                setState(() {
+                  _showGrid = !_showGrid;
+                });
+              },
+              child: const Icon(Icons.format_list_numbered_outlined),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

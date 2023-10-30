@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/util/media_query.dart';
@@ -48,6 +48,12 @@ class _AddBatimentosPageState extends State<AddBatimentosPage> {
   // Método para mostrar feedback e voltar para a tela principal
   voltar() {
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -657,56 +663,66 @@ class _AddBatimentosPageState extends State<AddBatimentosPage> {
                                       borderRadius: BorderRadius.circular(35),
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        if (_formKey.currentState!.validate()) {
-                                          // Batimento do formulário
-                                          int batimentosValue =
-                                              int.parse(_batimentos.text);
+                                      if (_formKey.currentState!.validate()) {
+                                        // Batimento do formulário
+                                        int oxigenacaoValue = 0;
+                                        int glicoseValue = 0;
+                                        int sistolicaValue = 0;
+                                        int diastolicaValue = 0;
+                                        int batimentosValue =
+                                            int.parse(_batimentos.text);
 
-                                          int oxigenacaoValue =
+                                        if (_oxigenacao.text.isNotEmpty) {
+                                          oxigenacaoValue =
                                               int.parse(_oxigenacao.text);
-
-                                          int glicoseValue =
-                                              int.parse(_glicose.text);
-
-                                          int sistolicaValue =
-                                              int.parse(_sistolica.text);
-
-                                          int diastolicaValue =
-                                              int.parse(_diastolica.text);
-
-                                          // Cria registro no banco
-                                          Provider.of<BatimentosRepository>(
-                                                  context,
-                                                  listen: false)
-                                              .criarInformacoesNoBanco(
-                                                  databaseReference,
-                                                  batimentosValue,
-                                                  glicoseValue,
-                                                  oxigenacaoValue,
-                                                  sistolicaValue,
-                                                  diastolicaValue);
-
-                                          voltar();
-                                          SnackBarUtil.mostrarSnackBar(
-                                              context,
-                                              "Registro criado com sucesso!",
-                                              Colors.green,
-                                              const Icon(
-                                                Icons.check,
-                                                color: Colors.white,
-                                              ));
-                                        } else {
-                                          SnackBarUtil.mostrarSnackBar(
-                                              context,
-                                              "Erro ao criar registro!",
-                                              Colors.red,
-                                              const Icon(
-                                                Icons.error,
-                                                color: Colors.white,
-                                              ));
                                         }
-                                      });
+
+                                        if (_glicose.text.isNotEmpty) {
+                                          glicoseValue =
+                                              int.parse(_glicose.text);
+                                        }
+
+                                        if (_sistolica.text.isNotEmpty) {
+                                          sistolicaValue =
+                                              int.parse(_sistolica.text);
+                                        }
+
+                                        if (_diastolica.text.isNotEmpty) {
+                                          diastolicaValue =
+                                              int.parse(_diastolica.text);
+                                        }
+
+                                        // Cria registro no banco
+                                        Provider.of<BatimentosRepository>(
+                                                context,
+                                                listen: false)
+                                            .criarInformacoesNoBanco(
+                                                databaseReference,
+                                                batimentosValue,
+                                                glicoseValue,
+                                                oxigenacaoValue,
+                                                sistolicaValue,
+                                                diastolicaValue);
+
+                                        voltar();
+                                        SnackBarUtil.mostrarSnackBar(
+                                            context,
+                                            "Registro criado com sucesso!",
+                                            Colors.green,
+                                            const Icon(
+                                              Icons.check,
+                                              color: Colors.white,
+                                            ));
+                                      } else {
+                                        SnackBarUtil.mostrarSnackBar(
+                                            context,
+                                            "Erro ao criar registro!",
+                                            Colors.red,
+                                            const Icon(
+                                              Icons.error,
+                                              color: Colors.white,
+                                            ));
+                                      }
                                     },
                                     child: const Padding(
                                       padding: EdgeInsets.all(18.0),

@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({Key? key}) : super(key: key);

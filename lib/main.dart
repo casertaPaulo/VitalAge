@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:vital_age/providers/bar_data.dart';
 import 'package:vital_age/firebase_options.dart';
 import 'package:vital_age/models/relatorio.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 import 'package:vital_age/services/api_service.dart';
 import 'package:vital_age/services/auth_service.dart';
 import 'package:vital_age/services/firestore_service.dart';
@@ -48,7 +48,8 @@ void main() async {
         create: (context) => BatimentosRepository(),
       ),
       ChangeNotifierProvider(
-        create: (context) => BarData(context.read<BatimentosRepository>()),
+        create: (context) => BarData(
+            context.read<BatimentosRepository>(), context.read<AuthService>()),
       ),
       ChangeNotifierProvider(
         create: (context) => IAService(),

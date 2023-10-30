@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
 import 'package:vital_age/services/firestore_service.dart';
 import 'package:vital_age/util/media_query.dart';

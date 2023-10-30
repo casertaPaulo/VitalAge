@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:vital_age/models/registro_model.dart';
 
 class BatimentosRepository extends ChangeNotifier {
-  // Constructor para inicializar 'id' e 'databaseReference'
-
   final List<Registro> _batimentos = [];
   final List<Registro> _batimentoFavorito = [];
 
@@ -26,16 +24,22 @@ class BatimentosRepository extends ChangeNotifier {
     databaseReference.onChildAdded.listen((DatabaseEvent event) {
       key = event.snapshot.key.toString();
       data = int.parse(event.snapshot.child('bpm').value.toString());
-
       // Verifica se o batimento já está na lista com base no uniqueKey
       bool batimentoJaExiste =
-          _batimentos.any((batimento) => batimento.uniqueKey == key);
+          _batimentos.any((registro) => registro.uniqueKey == key);
+
+      // Resgata a data de inserção do registro
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+        int.parse(
+          event.snapshot.child('timestamp').value.toString(),
+        ),
+      );
 
       if (!batimentoJaExiste) {
         _batimentos.add(
           Registro(
             batimentos: data,
-            dateTime: DateTime.now(),
+            dateTime: dateTime,
             uniqueKey: key,
           ),
         );
