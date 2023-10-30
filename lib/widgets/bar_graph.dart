@@ -5,6 +5,7 @@ class MyBarGraph extends StatefulWidget {
   final bool showGrid;
   final List<BarChartGroupData> bars;
   final Color cor;
+
   const MyBarGraph(
       {super.key,
       required this.showGrid,

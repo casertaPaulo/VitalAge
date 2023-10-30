@@ -1,12 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:vital_age/models/points.dart';
 
 class LineChartSample2 extends StatefulWidget {
   final bool isCurved;
   final List<Points> points;
+  final List<Points>? points2;
   const LineChartSample2(
-      {required this.isCurved, required this.points, super.key});
+      {this.points2, required this.isCurved, required this.points, super.key});
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -137,7 +139,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             show: true,
           ),
           belowBarData: BarAreaData(
-            show: true,
+            show: widget.points2 == null,
             gradient: LinearGradient(
               colors: gradientColors
                   .map((color) => color.withOpacity(0.3))
@@ -145,6 +147,30 @@ class _LineChartSample2State extends State<LineChartSample2> {
             ),
           ),
         ),
+
+        // CASO A LISTA DE PONTO 2 NÃO SEJA NULA, ELA CRIA OUTRA BARRA
+        if (widget.points2 != null)
+          LineChartBarData(
+            spots: widget.points2!
+                .map((point) => FlSpot(point.x, point.y))
+                .toList(),
+            isCurved: widget.isCurved,
+            curveSmoothness: 0.2,
+            gradient:
+                const LinearGradient(colors: [Colors.green, Colors.green]),
+            barWidth: 2,
+            dotData: const FlDotData(
+              show: true,
+            ),
+            belowBarData: BarAreaData(
+              show: widget.points2 == null,
+              gradient: LinearGradient(
+                colors: gradientColors
+                    .map((color) => color.withOpacity(0.3))
+                    .toList(),
+              ),
+            ),
+          ),
       ],
     );
   }
