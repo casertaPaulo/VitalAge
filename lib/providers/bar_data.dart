@@ -1,14 +1,15 @@
 import 'dart:collection';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:vital_age/models/batimentos.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/models/registro_model.dart';
+import 'package:vital_age/providers/registro_repository.dart';
+import 'package:vital_age/services/auth_service.dart';
 
 class BarData extends ChangeNotifier {
   // Instância privada de batimentos repository
   final BatimentosRepository _batimentosRepository;
+  final AuthService authService;
 
   // Array de barras do graph
   List<BarChartGroupData> _barData = [];
@@ -19,7 +20,7 @@ class BarData extends ChangeNotifier {
       UnmodifiableListView(_barData);
 
   // Construtor da classe BarData que recebe BatimentosRepository como parâmetro
-  BarData(this._batimentosRepository) {
+  BarData(this._batimentosRepository, this.authService) {
     _batimentosRepository.addListener(_onBatimentosRepositoryChanged);
     _initializeData();
   }
@@ -29,21 +30,30 @@ class BarData extends ChangeNotifier {
     _initializeData();
   }
 
+  void clearData() {
+    _barData.clear();
+    notifyListeners();
+  }
+
   // Método que mapeia a lista de batimentos e adiciona para um objeto BarData
   void _initializeData() {
     _barData = _batimentosRepository.batimentos.asMap().entries.map((entry) {
-      int index = entry.key;
-      Batimentos batimento = entry.value;
+      Registro batimento = entry.value;
+      int diaMes = (batimento.dateTime.day * 100) + batimento.dateTime.month;
 
       return BarChartGroupData(
-        x: index + 1,
+        x: diaMes,
         barRods: [
           BarChartRodData(
               toY: batimento.batimentos.toDouble(),
               borderRadius: BorderRadius.circular(5),
               width: 25,
+              backDrawRodData: BackgroundBarChartRodData(
+                color: Colors.red,
+                show: true,
+              ),
               color: _batimentosRepository.getCorComBaseNoBatimento(
-                  batimento.batimentos, batimento.idade, batimento.isMale)),
+                  batimento.batimentos, authService.idade, authService.sexo)),
         ],
       );
     }).toList();

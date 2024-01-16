@@ -4,6 +4,7 @@ import 'package:vital_age/pages/analise_page.dart';
 import 'package:vital_age/pages/home.dart';
 import 'package:vital_age/pages/informacoes_page.dart';
 import 'package:vital_age/pages/perfil_page.dart';
+import 'package:vital_age/util/media_query.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,10 +24,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final double heightSize = MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.symmetric(
+            vertical: Util.getDeviceType(context) == 'phone' ? 8.0 : 30.0,
+            horizontal: Util.getDeviceType(context) == 'phone' ? 8.0 : 130.0,
+          ),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(35),
@@ -39,21 +44,27 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               color: Colors.white,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(heightSize / 40),
               backgroundColor: Colors.transparent,
               activeColor: Colors.white,
-              gap: 8,
+              gap: Util.getDeviceType(context) == 'phone' ? 8.0 : 20.0,
               tabBackgroundColor: const Color(0xFF3c67b4),
               tabBorderRadius: 35,
               selectedIndex: index,
               haptic: true,
+              textStyle: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: Util.getDeviceType(context) == 'phone' ? 15.0 : 25.0,
+              ),
+              iconSize: Util.getDeviceType(context) == 'phone' ? 20.0 : 35.0,
               tabs: const [
                 GButton(
                   icon: Icons.home,
                   text: "Home",
                 ),
                 GButton(
-                  icon: Icons.bar_chart_outlined,
+                  icon: Icons.stacked_line_chart_sharp,
                   text: "Análise",
                 ),
                 GButton(

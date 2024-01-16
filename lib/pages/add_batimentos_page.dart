@@ -1,13 +1,13 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
-import 'package:vital_age/models/relatorio.dart';
-import 'package:vital_age/providers/batimentos_repository.dart';
+import 'package:vital_age/providers/registro_repository.dart';
 import 'package:vital_age/services/auth_service.dart';
+import 'package:vital_age/services/firestore_service.dart';
+import 'package:vital_age/util/media_query.dart';
 import 'package:vital_age/util/snack_bar.dart';
-
-import '../models/batimentos.dart';
 
 class AddBatimentosPage extends StatefulWidget {
   const AddBatimentosPage({
@@ -18,24 +18,30 @@ class AddBatimentosPage extends StatefulWidget {
   State<AddBatimentosPage> createState() => _AddBatimentosPageState();
 }
 
-class _AddBatimentosPageState extends State<AddBatimentosPage>
-    with SingleTickerProviderStateMixin {
+class _AddBatimentosPageState extends State<AddBatimentosPage> {
+  // Controladores
   final _batimentos = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool isMale = true;
-  String defaultAge = "";
-  String selectedAge = "";
+  final _oxigenacao = TextEditingController();
+  final _glicose = TextEditingController();
+  final _sistolica = TextEditingController();
+  final _diastolica = TextEditingController();
 
-  String selectedGender = "Masculino";
+  final _formKey = GlobalKey<FormState>();
   bool _isPress = false;
 
-  final List<String> ageOptions =
-      List.generate(101, (index) => index.toString());
+  late String id;
+  late DatabaseReference databaseReference;
+  FirebaseService firebaseService = FirebaseService();
 
   @override
   void initState() {
     super.initState();
-    context.read<AuthService>().obterNome();
+    // Coleta de dados
+    context.read<AuthService>().obterDados();
+
+    // Definindo path e id
+    id = firebaseService.getUserId();
+    databaseReference = firebaseService.getHeartbeatsReference();
   }
 
   // Método para mostrar feedback e voltar para a tela principal
@@ -44,41 +50,56 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    defaultAge = "${Provider.of<Relatorio>(context).idade}";
+    // Definindo tamanho da tela
+    final double widthSize = MediaQuery.of(context).size.width;
+    final double heightSize = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SizedBox(
-              width: constraints.maxWidth,
-              height: constraints.maxHeight,
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Cabeçalho da página
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                RichText(
-                                  text: const TextSpan(
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: widthSize,
+            height: heightSize + 50,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal:
+                        Util.getDeviceType(context) == 'phone' ? 30.0 : 120.0,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Cabeçalho da página
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              FadeInUp(
+                                duration: 800,
+                                child: RichText(
+                                  text: TextSpan(
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 30,
+                                      fontSize:
+                                          Util.getDeviceType(context) == 'phone'
+                                              ? 30.0
+                                              : 60.0,
                                     ),
-                                    children: [
+                                    children: const [
                                       TextSpan(
                                         text: 'Adicione\n',
                                       ),
@@ -94,297 +115,730 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _isPress = !_isPress;
-                                });
-                              },
-                              child: Image.asset(
-                                'assets/images/ponto-de-interrogacao.png',
-                                height: 50,
-                              )
-                                  .animate(
-                                    onPlay: (controller) => controller.repeat(),
-                                  )
-                                  .shimmer(delay: 400.ms, duration: 1800.ms)
-                                  .shake(hz: 4, curve: Curves.easeInOutCubic)
-                                  .scaleXY(end: 1.3, duration: 600.ms)
-                                  .then(delay: 600.ms)
-                                  .scaleXY(end: 1 / 1.3),
+                              ),
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isPress = !_isPress;
+                              });
+                            },
+                            child: Image.asset(
+                              'assets/images/ponto-de-interrogacao.png',
+                              height: Util.getDeviceType(context) == 'phone'
+                                  ? 50.0
+                                  : 90.0,
                             )
-                          ],
+                                .animate(
+                                  onPlay: (controller) => controller.repeat(),
+                                )
+                                .shimmer(delay: 400.ms, duration: 1800.ms)
+                                .shake(hz: 4, curve: Curves.easeInOutCubic)
+                                .scaleXY(end: 1.3, duration: 600.ms)
+                                .then(delay: 600.ms)
+                                .scaleXY(end: 1 / 1.3),
+                          )
+                        ],
+                      ),
+
+                      // Corpo do página
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Util.getDeviceType(context) == 'phone'
+                              ? 35.0
+                              : 80.0,
                         ),
-
-                        // Corpo do página
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 30),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.sizeOf(context).width,
-                                  child: TextFormField(
-                                    // Form Adicionar Batimentos
-                                    onTapOutside: (event) =>
-                                        FocusScope.of(context).unfocus(),
-                                    controller: _batimentos,
-                                    keyboardType: TextInputType.number,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30,
-                                    ),
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          borderSide: BorderSide.none),
-                                      label: const Text("  BPM"),
-                                      floatingLabelAlignment:
-                                          FloatingLabelAlignment.center,
-                                      labelStyle: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      prefixIcon: const Icon(
-                                        Icons.monitor_heart_outlined,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                        borderSide: const BorderSide(
-                                            color: Colors.white, width: 2),
-                                      ),
-                                      filled: true,
-                                      fillColor: const Color(0xFF1c1a4b),
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'INFORME OS BATIMENTOS';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                        child: Form(
+                          key: _formKey,
+                          child: FadeInUp(
+                            duration: 1000,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 30),
-                                      child: SizedBox(
-                                        // Form Adicionar gênero
-                                        width: 200,
-                                        child: DropdownButtonFormField<String>(
-                                          dropdownColor:
-                                              const Color(0xFF3c67b4),
-                                          decoration: InputDecoration(
-                                            focusedBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 2,
-                                              ),
+                                    Row(
+                                      children: [
+                                        // CONTAINER DE BATIMENTOS
+                                        Container(
+                                          width: constraints.maxWidth / 2 - 5,
+                                          height: 180,
+                                          decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(15),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            filled: true,
-                                            fillColor: const Color(0xFF1c1a4b),
-                                            label: const Text('Sexo'),
-                                            floatingLabelAlignment:
-                                                FloatingLabelAlignment.start,
-                                            labelStyle: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 30,
-                                            height: 1.2,
-                                            fontFamily: 'KanitBold',
-                                          ),
-                                          menuMaxHeight: 300,
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          value: selectedGender,
-                                          onChanged: (newValue) {
-                                            setState(() {
-                                              selectedGender = newValue!;
-                                            });
-                                          },
-                                          items: ['Masculino', 'Feminino']
-                                              .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(value),
-                                              );
-                                            },
-                                          ).toList(),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      // Form Adicionar idade
-                                      width: 100,
-                                      child: DropdownButtonFormField<String>(
-                                        alignment: Alignment.center,
-                                        dropdownColor: const Color(0xFF3c67b4),
-                                        decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(
-                                              borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 2,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          filled: true,
-                                          fillColor: const Color(0xFF1c1a4b),
-                                          label: const Text('Idade'),
-                                          floatingLabelAlignment:
-                                              FloatingLabelAlignment.start,
-                                          labelStyle: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 30,
-                                            height: 1.2,
-                                            fontFamily: 'KanitBold'),
-                                        menuMaxHeight: 300,
-                                        borderRadius: BorderRadius.circular(20),
-                                        value: defaultAge,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedAge = newValue!;
-                                          });
-                                        },
-                                        items: ageOptions
-                                            .map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                MaterialButton(
-                                  // Botão adicionar
-                                  onPressed: () {
-                                    setState(() {
-                                      if (_formKey.currentState!.validate()) {
-                                        int batimentosValue =
-                                            int.parse(_batimentos.text);
-                                        int idadeValue;
-                                        if (selectedAge.isEmpty) {
-                                          idadeValue = int.parse(defaultAge);
-                                        } else {
-                                          idadeValue = int.parse(selectedAge);
-                                        }
-                                        if (selectedGender == "Masculino") {
-                                          isMale = true;
-                                        } else {
-                                          isMale = false;
-                                        }
-                                        Provider.of<BatimentosRepository>(
-                                                context,
-                                                listen: false)
-                                            .addBatimento(Batimentos(
-                                                dateTime: DateTime.now(),
-                                                batimentos: batimentosValue,
-                                                idade: idadeValue,
-                                                isMale: isMale));
+                                                  BorderRadius.circular(35),
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Batimentos',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/VitalAge.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
 
-                                        voltar();
-                                        SnackBarUtil.mostrarSnackBar(
-                                            context,
-                                            "Registro criado com sucesso!",
-                                            Colors.green,
-                                            const Icon(
-                                              Icons.check,
-                                              color: Colors.white,
-                                            ));
-                                      } else {
-                                        SnackBarUtil.mostrarSnackBar(
-                                            context,
-                                            "Erro ao criar registro!",
-                                            Colors.red,
-                                            const Icon(
-                                              Icons.error,
-                                              color: Colors.white,
-                                            ));
-                                      }
-                                    });
-                                  },
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 50),
-                                  color: const Color(0xFF3c67b4),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: 30,
-                                      ),
-                                      Text(
-                                        'ADICIONAR',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'KanitBold',
-                                          color: Colors.white,
+                                                // Text Form Field
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          constraints.maxWidth /
+                                                              4,
+                                                      child: TextFormField(
+                                                        validator: (value) {
+                                                          if (value!.isEmpty) {
+                                                            return "Informe os batimentos!";
+                                                          } else {
+                                                            return null;
+                                                          }
+                                                        },
+                                                        controller: _batimentos,
+                                                        onTapOutside: (event) =>
+                                                            FocusScope.of(
+                                                                    context)
+                                                                .unfocus(),
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 50,
+                                                          height: 0.9,
+                                                          fontFamily:
+                                                              'KanitBold',
+                                                        ),
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  width: 2,
+                                                                  color: Colors
+                                                                      .white)),
+                                                          focusedBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.blue)),
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      'bpm',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+
+                                        // CONTAINER DE OXIGENAÇÃO
+                                        Container(
+                                          width: constraints.maxWidth / 2 - 5,
+                                          height: 180,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(35),
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Oxigenação',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/VitalAge.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Text Form Field
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          constraints.maxWidth /
+                                                              4.5,
+                                                      child: TextFormField(
+                                                        controller: _oxigenacao,
+                                                        onTapOutside: (event) =>
+                                                            FocusScope.of(
+                                                                    context)
+                                                                .unfocus(),
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 50,
+                                                          height: 0.9,
+                                                          fontFamily:
+                                                              'KanitBold',
+                                                        ),
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  width: 2,
+                                                                  color: Colors
+                                                                      .white)),
+                                                          focusedBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.blue)),
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      '%Sp02',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+
+                                    Row(
+                                      children: [
+                                        // CONTAINER DE SISTÓLICA
+                                        Container(
+                                          width: constraints.maxWidth / 2 - 5,
+                                          height: 180,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(35),
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Sistólica',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/pressao.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Text Form Field
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          constraints.maxWidth /
+                                                              4.5,
+                                                      child: TextFormField(
+                                                        controller: _sistolica,
+                                                        onTapOutside: (event) =>
+                                                            FocusScope.of(
+                                                                    context)
+                                                                .unfocus(),
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 50,
+                                                          height: 0.9,
+                                                          fontFamily:
+                                                              'KanitBold',
+                                                        ),
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  width: 2,
+                                                                  color: Colors
+                                                                      .white)),
+                                                          focusedBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.blue)),
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      'mmHg',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+
+                                        // CONTAINER DE DIASTÓLICA
+                                        Container(
+                                          width: constraints.maxWidth / 2 - 5,
+                                          height: 180,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(35),
+                                              color: Theme.of(context)
+                                                  .primaryColor),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 25,
+                                                  ),
+                                                  child: Row(
+                                                    // Cabeçalho do card
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Diastólica',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontFamily:
+                                                              'RobotoCondensed',
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 30,
+                                                        child: Image.asset(
+                                                          'assets/images/pressao.png',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+
+                                                // Text Form Field
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width:
+                                                          constraints.maxWidth /
+                                                              4.5,
+                                                      child: TextFormField(
+                                                        controller: _diastolica,
+                                                        onTapOutside: (event) =>
+                                                            FocusScope.of(
+                                                                    context)
+                                                                .unfocus(),
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 50,
+                                                          height: 0.9,
+                                                          fontFamily:
+                                                              'KanitBold',
+                                                        ),
+                                                        decoration:
+                                                            const InputDecoration(
+                                                          border: UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  width: 2,
+                                                                  color: Colors
+                                                                      .white)),
+                                                          focusedBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.blue)),
+                                                          enabledBorder:
+                                                              UnderlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide(
+                                                                          color:
+                                                                              Colors.white)),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Text(
+                                                      'mmHg',
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        height: 2.5,
+                                                        color: Colors
+                                                            .grey.shade600,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 10),
+
+                                    Container(
+                                      width: constraints.maxWidth,
+                                      height: 180,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(35),
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                vertical: 25,
+                                              ),
+                                              child: Row(
+                                                // Cabeçalho do card
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    'Glicose',
+                                                    style: TextStyle(
+                                                      fontSize: 25,
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w900,
+                                                      fontFamily:
+                                                          'RobotoCondensed',
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 35,
+                                                    child: Image.asset(
+                                                      'assets/images/glicose.png',
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+
+                                            // Text Form Field
+                                            Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: constraints.maxWidth /
+                                                      2.5,
+                                                  child: TextFormField(
+                                                    controller: _glicose,
+                                                    onTapOutside: (event) =>
+                                                        FocusScope.of(context)
+                                                            .unfocus(),
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 60,
+                                                      height: 0.9,
+                                                      fontFamily: 'KanitBold',
+                                                    ),
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border: UnderlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  width: 2,
+                                                                  color: Colors
+                                                                      .white)),
+                                                      focusedBorder:
+                                                          UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      enabledBorder:
+                                                          UnderlineInputBorder(
+                                                              borderSide: BorderSide(
+                                                                  color: Colors
+                                                                      .white)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  'mg/dL',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    height: 2.5,
+                                                    color: Colors.grey.shade600,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                    ),
+
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    // Botão de Salvar registros
+                                    MaterialButton(
+                                      color: Colors.white,
+                                      elevation: 2,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(35),
+                                      ),
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          // Batimento do formulário
+                                          int oxigenacaoValue = 0;
+                                          int glicoseValue = 0;
+                                          int sistolicaValue = 0;
+                                          int diastolicaValue = 0;
+                                          int batimentosValue =
+                                              int.parse(_batimentos.text);
+
+                                          if (_oxigenacao.text.isNotEmpty) {
+                                            oxigenacaoValue =
+                                                int.parse(_oxigenacao.text);
+                                          }
+
+                                          if (_glicose.text.isNotEmpty) {
+                                            glicoseValue =
+                                                int.parse(_glicose.text);
+                                          }
+
+                                          if (_sistolica.text.isNotEmpty) {
+                                            sistolicaValue =
+                                                int.parse(_sistolica.text);
+                                          }
+
+                                          if (_diastolica.text.isNotEmpty) {
+                                            diastolicaValue =
+                                                int.parse(_diastolica.text);
+                                          }
+
+                                          // Cria registro no banco
+                                          Provider.of<BatimentosRepository>(
+                                                  context,
+                                                  listen: false)
+                                              .criarInformacoesNoBanco(
+                                                  databaseReference,
+                                                  batimentosValue,
+                                                  glicoseValue,
+                                                  oxigenacaoValue,
+                                                  sistolicaValue,
+                                                  diastolicaValue);
+
+                                          voltar();
+                                          SnackBarUtil.mostrarSnackBar(
+                                              context,
+                                              "Registro criado com sucesso!",
+                                              Colors.green,
+                                              const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                              ));
+                                        } else {
+                                          SnackBarUtil.mostrarSnackBar(
+                                              context,
+                                              "Erro ao criar registro!",
+                                              Colors.red,
+                                              const Icon(
+                                                Icons.error,
+                                                color: Colors.white,
+                                              ));
+                                        }
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(18.0),
+                                        child: Text(
+                                          'Salvar',
+                                          style: TextStyle(
+                                            fontFamily: 'RobotoCondensed',
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  // Tela do ícone "interrogação"
-                  _isPress
-                      ? FadeInUp(
-                          duration: 500,
-                          child: DraggableScrollableSheet(
-                            initialChildSize: 0.95,
-                            minChildSize: 0.05,
-                            maxChildSize: 0.95,
-                            builder: (context, scrollController) {
-                              return Container(
+                // Tela do ícone "interrogação"
+                _isPress
+                    ? FadeInUp(
+                        duration: 500,
+                        child: DraggableScrollableSheet(
+                          initialChildSize: 0.95,
+                          minChildSize: 0.05,
+                          maxChildSize: 0.95,
+                          builder: (context, scrollController) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Container(
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.only(
@@ -395,152 +849,246 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                   children: [
                                     SingleChildScrollView(
                                       controller: scrollController,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 20),
-                                          Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: Image.asset(
-                                                    'assets/images/Screenshot 2023-09-09 173707.png')
-                                                .animate(
-                                                  onPlay: (controller) =>
-                                                      controller.repeat(),
-                                                )
-                                                .shimmer(
-                                                  delay: 400.ms,
-                                                  duration: 1800.ms,
-                                                )
-                                                .then(delay: 600.ms),
-                                          ),
-                                          Center(
-                                            child: Padding(
+                                      child: SizedBox(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            Padding(
                                               padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 30),
-                                              child: Container(
-                                                height: 1,
-                                                color: Colors.grey,
+                                                  const EdgeInsets.all(10.0),
+                                              child: Center(
+                                                child: Image.asset(
+                                                  'assets/images/Screenshot 2023-09-09 173707.png',
+                                                  width: Util.getDeviceType(
+                                                              context) ==
+                                                          'phone'
+                                                      ? widthSize
+                                                      : widthSize / 1.5,
+                                                )
+                                                    .animate(
+                                                      onPlay: (controller) =>
+                                                          controller.repeat(),
+                                                    )
+                                                    .shimmer(
+                                                      delay: 400.ms,
+                                                      duration: 1800.ms,
+                                                    )
+                                                    .then(delay: 600.ms),
                                               ),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 30, vertical: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                RichText(
-                                                  text: const TextSpan(
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 30,
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: Util.getDeviceType(
+                                                            context) ==
+                                                        'phone'
+                                                    ? 30.0
+                                                    : 160.0,
+                                                vertical: 10,
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Center(
+                                                    child: Container(
+                                                      height: 1,
+                                                      color: Colors.grey,
                                                     ),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Batimentos em\n',
+                                                  ),
+                                                  SizedBox(
+                                                    height: Util.getDeviceType(
+                                                                context) ==
+                                                            'phone'
+                                                        ? 10.0
+                                                        : 30.0,
+                                                  ),
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize:
+                                                            Util.getDeviceType(
+                                                                        context) ==
+                                                                    'phone'
+                                                                ? 30.0
+                                                                : 50.0,
                                                       ),
-                                                      TextSpan(
-                                                        text: 'Repouso',
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                      children: const [
+                                                        TextSpan(
+                                                          text:
+                                                              'Batimentos em\n',
                                                         ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '!',
-                                                      ),
-                                                    ],
+                                                        TextSpan(
+                                                          text: 'Repouso',
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                        TextSpan(
+                                                          text: '!',
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                Text(
-                                                  // Aqui vai o nome vindo do banco
-                                                  'Caro ${context.read<AuthService>().nome},',
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                const Text(
-                                                  'Para garantir que possamos fornecer a você a melhor experiência e informações precisas sobre sua saúde, solicitamos que você forneça seus batimentos cardíacos em repouso. Essa é uma medida importante para entender melhor o funcionamento do seu coração e monitorar sua saúde cardiovascular.',
-                                                  textAlign: TextAlign.justify,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 50),
-                                                const Text(
-                                                  'Por que é importante informar seus batimentos em repouso?',
-                                                  textAlign: TextAlign.start,
-                                                  style: TextStyle(
-                                                    fontSize: 25,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                const Text(
-                                                  'Os batimentos cardíacos em repouso são um indicador crucial da saúde do seu coração. Eles refletem o quão eficientemente seu coração está bombeando sangue enquanto você está em um estado de repouso. Taxas de batimentos em repouso fora do intervalo normal podem ser um sinal de possíveis problemas cardíacos.',
-                                                  textAlign: TextAlign.justify,
-                                                  style:
-                                                      TextStyle(fontSize: 18),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                const Text(
-                                                  'Manter um registro dos seus batimentos em repouso ao longo do tempo permite que você e seus profissionais de saúde monitorem qualquer mudança ou tendência que possa exigir atenção médica. Isso ajuda na detecção precoce de problemas cardíacos e na prevenção de complicações futuras.',
-                                                  textAlign: TextAlign.justify,
-                                                  style:
-                                                      TextStyle(fontSize: 18),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Container(
-                                                  height: 1,
-                                                  color: Colors.grey,
-                                                ),
-                                                const SizedBox(height: 30),
-                                                const Text(
-                                                  'Lembramos que essas informações são confidenciais e serão usadas exclusivamente para fornecer um serviço personalizado e melhorar sua experiência de saúde! O monitoramento regular dos batimentos cardíacos em repouso é uma prática importante para cuidar da sua saúde cardiovascular.',
-                                                  textAlign: TextAlign.justify,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
+                                                  const SizedBox(height: 20),
+                                                  Text(
+                                                    // Aqui vai o nome vindo do banco
+                                                    'Caro ${context.read<AuthService>().nome},',
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
                                                       fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                const Text(
-                                                  'Agradecemos pela sua colaboração e por escolher cuidar da sua saúde conosco.',
-                                                  textAlign: TextAlign.justify,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                const Text(
-                                                  'Atenciosamente,',
-                                                  textAlign: TextAlign.justify,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
+                                                  const SizedBox(height: 20),
+                                                  Text(
+                                                    'Para garantir que possamos fornecer a você a melhor experiência e informações precisas sobre sua saúde, solicitamos que você forneça seus batimentos cardíacos em repouso. Essa é uma medida importante para entender melhor o funcionamento do seu coração e monitorar sua saúde cardiovascular.',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
+                                                    ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 20),
-                                                const Text(
-                                                  'Equipe VitalAge',
-                                                  textAlign: TextAlign.justify,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Color(0xFF3c67b4),
-                                                    fontWeight: FontWeight.bold,
+                                                  const SizedBox(height: 50),
+                                                  Text(
+                                                    'Por que é importante informar seus batimentos em repouso?',
+                                                    textAlign: TextAlign.start,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 25.0
+                                                              : 40.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
-                                                )
-                                              ],
+                                                  const SizedBox(height: 20),
+                                                  Text(
+                                                    'Os batimentos cardíacos em repouso são um indicador crucial da saúde do seu coração. Eles refletem o quão eficientemente seu coração está bombeando sangue enquanto você está em um estado de repouso. Taxas de batimentos em repouso fora do intervalo normal podem ser um sinal de possíveis problemas cardíacos.',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Text(
+                                                    'Manter um registro dos seus batimentos em repouso ao longo do tempo permite que você e seus profissionais de saúde monitorem qualquer mudança ou tendência que possa exigir atenção médica. Isso ajuda na detecção precoce de problemas cardíacos e na prevenção de complicações futuras.',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Container(
+                                                    height: 1,
+                                                    color: Colors.grey,
+                                                  ),
+                                                  const SizedBox(height: 30),
+                                                  Text(
+                                                    'Lembramos que essas informações são confidenciais e serão usadas exclusivamente para fornecer um serviço personalizado e melhorar sua experiência de saúde! O monitoramento regular dos batimentos cardíacos em repouso é uma prática importante para cuidar da sua saúde cardiovascular.',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            Util.getDeviceType(
+                                                                        context) ==
+                                                                    'phone'
+                                                                ? 18.0
+                                                                : 25.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  Text(
+                                                    'Agradecemos pela sua colaboração e por escolher cuidar da sua saúde conosco.',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  Text(
+                                                    'Atenciosamente,',
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          Util.getDeviceType(
+                                                                      context) ==
+                                                                  'phone'
+                                                              ? 18.0
+                                                              : 25.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                      bottom: Util.getDeviceType(
+                                                                  context) ==
+                                                              'phone'
+                                                          ? 0.0
+                                                          : 100.0,
+                                                    ),
+                                                    child: Text(
+                                                      'Equipe VitalAge',
+                                                      textAlign:
+                                                          TextAlign.justify,
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            Util.getDeviceType(
+                                                                        context) ==
+                                                                    'phone'
+                                                                ? 18.0
+                                                                : 25.0,
+                                                        color: const Color(
+                                                            0xFF3c67b4),
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
                                     Positioned(
@@ -550,8 +1098,16 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Container(
-                                            width: 50,
-                                            height: 50,
+                                            width:
+                                                Util.getDeviceType(context) ==
+                                                        'phone'
+                                                    ? 50.0
+                                                    : 80.0,
+                                            height:
+                                                Util.getDeviceType(context) ==
+                                                        'phone'
+                                                    ? 50.0
+                                                    : 80.0,
                                             decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 color: const Color(0xFF0f1539)
@@ -562,10 +1118,14 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                                   _isPress = !_isPress;
                                                 });
                                               },
-                                              icon: const Icon(
+                                              icon: Icon(
                                                 Icons.close_rounded,
                                                 color: Colors.red,
-                                                size: 30,
+                                                size: Util.getDeviceType(
+                                                            context) ==
+                                                        'phone'
+                                                    ? 30.0
+                                                    : 40.0,
                                               ),
                                             ),
                                           ),
@@ -574,15 +1134,15 @@ class _AddBatimentosPageState extends State<AddBatimentosPage>
                                     )
                                   ],
                                 ),
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
-              ),
-            );
-          },
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    : const SizedBox(),
+              ],
+            ),
+          ),
         ),
       ),
     );

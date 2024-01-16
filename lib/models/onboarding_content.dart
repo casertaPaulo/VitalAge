@@ -21,5 +21,9 @@ class OnboadingContent {
       "Mantenha-se\natualizado",
       'Explore a conveniência de ter seus dados sempre à mão, enquanto nossa solução baseada em nuvem oferece a você a flexibilidade e confiabilidade necessárias para uma experiência de usuário excepcional.',
     ),
+    Onboard(
+        'assets/images/inteligencia-artificial.png',
+        'Inteligência\nArtificial',
+        'Com a ajuda da inteligência artificial, nosso aplicativo é capaz de analisar informações de forma rápida e eficiente, identificando padrões, tendências e anomalias que seriam difíceis de detectar de outra forma. Isso significa que você terá acesso a relatórios confiáveis e personalizados que o ajudarão a tomar decisões informadas e estratégicas.')
   ];
 }

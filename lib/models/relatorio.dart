@@ -1,56 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:vital_age/services/auth_service.dart';
 
 class Relatorio extends ChangeNotifier {
-  int _idade = 0;
-  double _peso = 0;
-  double _altura = 0;
-  String sexo = "";
-
-  // Getters & Setters
-  int get idade => _idade;
-
-  void setIdade(int idade) {
-    _idade = idade;
+  mostrarGlicose(int? glicose) {
+    if (glicose == 0) {
+      return "N/D";
+    } else {
+      return "$glicose";
+    }
   }
 
-  double get peso => _peso;
+  mostrarOxig(int? onix) {
+    if (onix == 0) {
+      return "N/D";
+    } else {
+      return "$onix";
+    }
+  }
 
-  getPeso() {
+  mostrarSiastolica(int? sistolica) {
+    if (sistolica == 0) {
+      return "N/D";
+    } else {
+      return "$sistolica";
+    }
+  }
+
+  mostrarDiastolica(int? diastolica) {
+    if (diastolica == 0) {
+      return "N/D";
+    } else {
+      return "$diastolica";
+    }
+  }
+
+  mostrarPeso(double peso) {
     if (peso == 0) {
       return "N/D";
     } else {
-      return "$peso kg";
+      return "${peso.truncate()}";
     }
   }
 
-  void setPeso(double peso) {
-    _peso = peso;
-  }
-
-  double get altura => _altura;
-
-  getAltura() {
+  mostrarAltura(double altura) {
     if (altura == 0) {
       return "N/D";
     } else {
-      return "${altura}m";
+      return "${altura.truncate() / 100}";
     }
   }
 
-  void setAltura(double altura) {
-    _altura = altura;
-  }
-
   // Calcula o IMC
-  calculaIMC() {
-    return _peso / (altura * altura);
+  calculaIMC(double peso, double altura) {
+    return peso / ((altura / 100) * (altura / 100));
   }
 
   // Retorna o resultado do cálculo do IMC
-  mostraIMC() {
-    double imc = calculaIMC();
+  mostraIMC(double imc) {
     if (imc.isNaN) {
       return "Inf. Insuficientes";
     } else {
@@ -68,7 +73,7 @@ class Relatorio extends ChangeNotifier {
         if (imc < 18.5) {
           return "Baixo peso";
         } else if (imc >= 18.5 && imc < 24.9) {
-          return "Peso normal";
+          return "PESO NORMAL";
         } else if (imc > 25.0 && imc < 29.9) {
           return "Excesso de peso";
         } else if (imc > 30 && imc < 34.9) {
@@ -90,8 +95,36 @@ class Relatorio extends ChangeNotifier {
     }
   }
 
-  pesoIdeal(String feedback) {
-    double imc = calculaIMC();
+  //feedback peso
+  feedbackPeso(double imc, int idade) {
+    if (imc.isNaN) {
+      return "Inf. Insuficientes";
+    } else {
+      if (idade <= 65) {
+        // ADULTO
+        if (imc < 18.5) {
+          return "MAGREZA";
+        } else if (imc >= 18.5 && imc < 24.9) {
+          return "NORMAL";
+        } else if (imc > 25.0 && imc < 29.9) {
+          return "SOBREPESO";
+        } else {
+          return "OBESO";
+        }
+      } else {
+        if (imc < 22) {
+          return "BAIXO PESO";
+        } else if (imc > 22 && imc < 27) {
+          return "ADEQUADO OU EUTRÓFICO";
+        } else {
+          return "SOBREPESO";
+        }
+      }
+    }
+  }
+
+  pesoIdeal(String feedback, double peso, double altura) {
+    double imc = calculaIMC(peso, altura);
     if (imc.isNaN) {
       return "N/A";
     } else {
@@ -100,6 +133,18 @@ class Relatorio extends ChangeNotifier {
       } else {
         return "NÃO";
       }
+    }
+  }
+
+  mostraIdade(int idade) {
+    if (idade > 0 && idade < 12) {
+      return "CRIANÇA";
+    } else if (idade > 12 && idade < 21) {
+      return "JOVEM";
+    } else if (idade > 21 && idade < 65) {
+      return "ADULTO";
+    } else {
+      return "IDOSO";
     }
   }
 }
