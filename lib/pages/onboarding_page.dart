@@ -398,7 +398,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                                                 controller: senha,
                                                 obscureText: obscureText,
                                                 decoration: InputDecoration(
-                                                    errorStyle: TextStyle(
+                                                    errorStyle: const TextStyle(
                                                         fontSize: 12,
                                                         fontWeight:
                                                             FontWeight.bold),

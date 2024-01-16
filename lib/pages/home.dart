@@ -443,10 +443,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             scrollDirection: Axis.horizontal,
             child: Consumer<BarData>(
               builder: (context, value, child) {
-                return MyBarGraph(
-                  showGrid: _showGrid,
-                  bars: value.barData,
-                  cor: Colors.green,
+                return FadeInUp(
+                  duration: 500,
+                  child: MyBarGraph(
+                    showGrid: _showGrid,
+                    bars: value.barData,
+                    cor: Colors.green,
+                  ),
                 );
               },
             ),

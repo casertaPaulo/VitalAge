@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_age/animations/fade_animation.dart';
@@ -70,7 +69,7 @@ class _AnalisePageState extends State<AnalisePage> {
               borderRadius: BorderRadius.circular(35),
             ),
             content: SizedBox(
-              height: MediaQuery.sizeOf(context).height / 3,
+              height: MediaQuery.sizeOf(context).height / 4,
               child: Column(
                 children: [
                   Stack(
@@ -144,7 +143,7 @@ class _AnalisePageState extends State<AnalisePage> {
                           ),
                           filled: true,
                           fillColor: const Color(0xFF1c1a4b),
-                          label: const Text('Escolha'),
+                          label: const Text('Opção 1'),
                           floatingLabelAlignment: FloatingLabelAlignment.start,
                           labelStyle: const TextStyle(
                             color: Colors.white,
@@ -177,6 +176,8 @@ class _AnalisePageState extends State<AnalisePage> {
                             } else if (selectedTip == "Diastólica") {
                               dataSelected = [...diastolicaData];
                               print(dataSelected);
+                            } else if (selectedTip == '') {
+                              selected = false;
                             }
                           });
                           Get.back();
@@ -308,7 +309,7 @@ class _AnalisePageState extends State<AnalisePage> {
                           ),
                           filled: true,
                           fillColor: const Color(0xFF1c1a4b),
-                          label: const Text('Escolha'),
+                          label: const Text('Opção 1'),
                           floatingLabelAlignment: FloatingLabelAlignment.start,
                           labelStyle: const TextStyle(
                             color: Colors.white,
@@ -374,7 +375,7 @@ class _AnalisePageState extends State<AnalisePage> {
                         ),
                         filled: true,
                         fillColor: const Color(0xFF1c1a4b),
-                        label: const Text('Escolha'),
+                        label: const Text('Opção 2'),
                         floatingLabelAlignment: FloatingLabelAlignment.start,
                         labelStyle: const TextStyle(
                           color: Colors.white,
@@ -586,7 +587,7 @@ class _AnalisePageState extends State<AnalisePage> {
                         right: 15,
                         bottom: 0,
                         child: FadeInUp(
-                          duration: 1600,
+                          duration: 1000,
                           child: Image.asset(
                             'assets/images/grafico.png',
                             height: 150,
@@ -612,19 +613,41 @@ class _AnalisePageState extends State<AnalisePage> {
                         child: const Icon(Icons.show_chart),
                       ),
                       if (selected)
-                        FadeInUp(
-                          duration: 300,
-                          child: FloatingActionButton(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                setState(() {
-                                  _isCurved = !_isCurved;
-                                });
-                              },
-                              child: Image.asset(
-                                'assets/images/curva.png',
-                                color: Colors.white,
-                              )),
+                        Row(
+                          children: [
+                            FadeInUp(
+                              duration: 300,
+                              child: FloatingActionButton(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  onPressed: () {
+                                    setState(() {
+                                      _isCurved = !_isCurved;
+                                    });
+                                  },
+                                  child: Image.asset(
+                                    'assets/images/curva.png',
+                                    color: Colors.white,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      if (selected)
+                        Row(
+                          children: [
+                            FadeInUp(
+                              duration: 300,
+                              child: FloatingActionButton(
+                                  backgroundColor:
+                                      Theme.of(context).primaryColor,
+                                  onPressed: () {
+                                    setState(() {
+                                      _isCurved = !_isCurved;
+                                    });
+                                  },
+                                  child: const Icon(Icons.color_lens)),
+                            ),
+                          ],
                         ),
                       FloatingActionButton(
                         backgroundColor: Theme.of(context).primaryColor,

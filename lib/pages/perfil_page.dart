@@ -463,19 +463,33 @@ class _PerfilPageState extends State<PerfilPage> {
                             setState(() {
                               _pressPeso = false;
                               double pesoValue = double.parse(_peso.text);
-                              // Função que seta o valor do peso no banco de da
-                              Provider.of<FirebaseService>(context,
-                                      listen: false)
-                                  .salvarPeso(id, pesoValue);
-                              SnackBarUtil.mostrarSnackBar(
+
+                              if (pesoValue > 0 && pesoValue < 500) {
+                                Provider.of<FirebaseService>(context,
+                                        listen: false)
+                                    .salvarPeso(id, pesoValue);
+                                SnackBarUtil.mostrarSnackBar(
+                                    context,
+                                    "Peso atualizado!",
+                                    Colors.green,
+                                    const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                    ));
+                                context.read<AuthService>().obterDados();
+                              } else {
+                                SnackBarUtil.mostrarSnackBar(
                                   context,
-                                  "Peso atualizado!",
-                                  Colors.green,
+                                  "Erro! Insira um peso válido!",
+                                  Colors.red,
                                   const Icon(
-                                    Icons.check,
+                                    Icons.error,
                                     color: Colors.white,
-                                  ));
-                              context.read<AuthService>().obterDados();
+                                  ),
+                                );
+                              }
+
+                              // Função que seta o valor do peso no banco de dados
                             });
                           } else {
                             SnackBarUtil.mostrarSnackBar(
@@ -620,19 +634,32 @@ class _PerfilPageState extends State<PerfilPage> {
                             if (_formKey.currentState!.validate()) {
                               _pressAltura = false;
                               double alturaValue = double.parse(_altura.text);
-                              Provider.of<FirebaseService>(context,
-                                      listen: false)
-                                  .salvarAltura(id, alturaValue);
-                              SnackBarUtil.mostrarSnackBar(
-                                context,
-                                "Altura atualizada!",
-                                Colors.green,
-                                const Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                ),
-                              );
-                              context.read<AuthService>().obterDados();
+
+                              if (alturaValue > 0 && alturaValue < 250) {
+                                Provider.of<FirebaseService>(context,
+                                        listen: false)
+                                    .salvarAltura(id, alturaValue);
+                                SnackBarUtil.mostrarSnackBar(
+                                  context,
+                                  "Altura atualizada!",
+                                  Colors.green,
+                                  const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                  ),
+                                );
+                                context.read<AuthService>().obterDados();
+                              } else {
+                                SnackBarUtil.mostrarSnackBar(
+                                  context,
+                                  "Erro! Insira a altura corretamente!",
+                                  Colors.red,
+                                  const Icon(
+                                    Icons.error,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              }
                             } else {
                               SnackBarUtil.mostrarSnackBar(
                                 context,
@@ -779,29 +806,32 @@ class _PerfilPageState extends State<PerfilPage> {
                           if (_formKey.currentState!.validate()) {
                             _pressIdade = false;
                             int idadeValue = int.parse(_idade.text);
-                            Provider.of<FirebaseService>(context, listen: false)
-                                .salvarIdade(id, idadeValue);
-                            SnackBarUtil.mostrarSnackBar(
-                              context,
-                              "Idade atualizada!",
-                              Colors.green,
-                              const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                              ),
-                            );
-                            context.read<AuthService>().obterDados();
-                          } else {
-                            SnackBarUtil.mostrarSnackBar(
-                              context,
-                              "Erro! Insira a idade corretamente!",
-                              Colors.red,
-                              const Icon(
-                                Icons.error,
-                                color: Colors.white,
-                              ),
-                            );
-                          }
+                            if (idadeValue >= 0 && idadeValue < 150) {
+                              Provider.of<FirebaseService>(context,
+                                      listen: false)
+                                  .salvarIdade(id, idadeValue);
+                              SnackBarUtil.mostrarSnackBar(
+                                context,
+                                "Idade atualizada!",
+                                Colors.green,
+                                const Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                ),
+                              );
+                              context.read<AuthService>().obterDados();
+                            } else {
+                              SnackBarUtil.mostrarSnackBar(
+                                context,
+                                "Erro! Insira a idade corretamente!",
+                                Colors.red,
+                                const Icon(
+                                  Icons.error,
+                                  color: Colors.white,
+                                ),
+                              );
+                            }
+                          } else {}
                         });
                       },
                       padding: const EdgeInsets.symmetric(

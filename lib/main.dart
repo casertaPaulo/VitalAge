@@ -23,9 +23,6 @@ void main() async {
   // Garante que todo o framework do flutter esteja inicilizado
   WidgetsFlutterBinding.ensureInitialized();
 
-  // SystemChrome.setPreferredOrientations(
-  //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
   Intl.defaultLocale = 'pt_BR'; // Inicialize o idioma para 'pt_BR'
   initializeDateFormatting(); // Inicialize os dados de localização
 
@@ -75,7 +72,7 @@ class MainApp extends StatelessWidget {
           primaryColor: const Color(0xFF1c1a4b),
           colorScheme: ColorScheme.fromSwatch()
               .copyWith(secondary: const Color(0xFF1c1a4b))),
-      home: AuthCheck(),
+      home: const AuthCheck(),
     );
   }
 }

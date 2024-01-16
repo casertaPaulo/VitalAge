@@ -136,8 +136,8 @@ class Relatorio extends ChangeNotifier {
     }
   }
 
-  retornaIdade(int idade) {
-    if (idade > 1 && idade < 12) {
+  mostraIdade(int idade) {
+    if (idade > 0 && idade < 12) {
       return "CRIANÇA";
     } else if (idade > 12 && idade < 21) {
       return "JOVEM";

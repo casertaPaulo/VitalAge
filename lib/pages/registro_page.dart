@@ -78,10 +78,10 @@ class _RegistroPageState extends State<RegistroPage> {
   }
 
   retornaHora() {
-    // Obter a hora atual
+    // obtem a hora atual
     final currentTime = DateTime.now();
 
-    // Determinar se é dia, tarde ou noite com base na hora
+    // determina se é dia, tarde ou noite
     if (currentTime.hour >= 6 && currentTime.hour < 12) {
       return 'Bom dia';
     } else if (currentTime.hour >= 12 && currentTime.hour < 18) {
@@ -107,7 +107,6 @@ class _RegistroPageState extends State<RegistroPage> {
     final authService = context.watch<AuthService>();
     final frequencia = widget.registro.batimentos;
     final glicose = widget.registro.glicose;
-    final temperatura = widget.registro.temp;
     final diastolica = widget.registro.diastolica;
     final sistolica = widget.registro.sistolica;
     final oxigenacao = widget.registro.oxigenacao;
@@ -378,7 +377,7 @@ class _RegistroPageState extends State<RegistroPage> {
                                                                       35)),
                                                       child: Center(
                                                         child: Text(
-                                                          '${batimentosRepository.retornaIdade(idade)}',
+                                                          '${relatorio.mostraIdade(idade)}',
                                                           style:
                                                               const TextStyle(
                                                             color: Colors.white,
@@ -1472,9 +1471,9 @@ class _RegistroPageState extends State<RegistroPage> {
 
                 // Page 2
                 SingleChildScrollView(
-                  child: SizedBox(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45),
+                    child: SizedBox(
                       child: _isPress == true
                           ? FadeInUp(
                               duration: 1000,
@@ -1668,41 +1667,76 @@ class _RegistroPageState extends State<RegistroPage> {
                             )
                           : Column(
                               children: [
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: SizedBox(
-                                    child: DefaultTextStyle(
-                                      style: const TextStyle(
-                                        fontSize: 40.0,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      child: AnimatedTextKit(
-                                        repeatForever: false,
-                                        isRepeatingAnimation: false,
-                                        onFinished: () {
-                                          setState(() {
-                                            _termineted = true;
-                                          });
-                                        },
-                                        animatedTexts: [
-                                          TypewriterAnimatedText(
-                                              'Usufrua da\nInteligência\nArtificial',
-                                              curve: Curves.linear,
-                                              speed: const Duration(
-                                                  milliseconds: 100)),
-                                        ],
+                                Stack(
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.sizeOf(context).width,
+                                      height: 250,
+                                      child: OverflowBox(
+                                        minWidth: 0.0,
+                                        minHeight: 0.0,
+                                        maxWidth: double.infinity,
+                                        maxHeight: double.infinity,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 270),
+                                          child: FadeInUp(
+                                            duration: 700,
+                                            child: Image.asset(
+                                              'assets/images/inteligencia-artificial.png',
+                                              width: 500,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    Positioned(
+                                      top: 100,
+                                      child: Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: SizedBox(
+                                          child: DefaultTextStyle(
+                                            style: TextStyle(
+                                              fontSize: 40.0,
+                                              fontFamily: 'RobotoCondensed',
+                                              color: Colors.grey.shade100,
+                                              fontWeight: FontWeight.bold,
+                                              shadows: const [
+                                                Shadow(
+                                                  // Adiciona sombra ao texto
+                                                  blurRadius: 15.0,
+                                                  color: Colors.black,
+                                                  offset: Offset(5.0, 5.0),
+                                                ),
+                                              ],
+                                            ),
+                                            child: AnimatedTextKit(
+                                              repeatForever: false,
+                                              isRepeatingAnimation: false,
+                                              onFinished: () {
+                                                setState(() {
+                                                  _termineted = true;
+                                                });
+                                              },
+                                              animatedTexts: [
+                                                TypewriterAnimatedText(
+                                                    'Usufrua da\nInteligência\nArtificial',
+                                                    curve: Curves.linear,
+                                                    speed: const Duration(
+                                                        milliseconds: 100)),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 _termineted
                                     ? FadeInUp(
                                         duration: 700,
                                         child: Column(
                                           children: [
-                                            Image.asset(
-                                                'assets/images/inteligencia-artificial.png'),
                                             Stack(
                                               children: [
                                                 SizedBox(
@@ -1986,7 +2020,7 @@ class _RegistroPageState extends State<RegistroPage> {
         const Padding(
           padding: EdgeInsets.only(top: 12.0),
           child: Text(
-            "Quando seus batimentos cardíacos estão muito rápidos, isso pode ser um sinal de que seu coração está trabalhando mais do que o normal. Isso é importante prestar atenção, pois pode ser um indicativo de várias condições de saúde. Se você está sentindo seus batimentos cardíacos acelerados e isso não está relacionado a atividades físicas intensas, como exercícios, aqui estão algumas ações que você deve considerar:\n\n1. Avalie a sua situação: Verifique se você está se sentindo bem em geral. Se estiver com outros sintomas preocupantes, como tontura, falta de ar ou dor no peito, procure ajuda médica imediatamente.\n\n2. Descanse e relaxe: Às vezes, o estresse e a ansiedade podem aumentar a frequência cardíaca. Tente relaxar, respirar profundamente e afastar-se de situações estressantes.\n\n3. Hidrate-se: A desidratação também pode afetar a frequência cardíaca. Beba água para garantir que você esteja bem hidratado.\n\n6. Procure ajuda médica: Se seus batimentos cardíacos rápidos persistirem ou se você tiver outros sintomas graves, é aconselhável procurar orientação médica. Se for um episódio agudo ou você estiver em um ambiente médico, a equipe médica poderá fornecer o tratamento adequado.\n\nLembre-se de que a frequência cardíaca rápida pode ser causada por uma série de fatores, e a avaliação de um profissional de saúde é essencial para determinar a causa e o tratamento adequado. Não hesite em procurar ajuda se você estiver preocupado com seus batimentos cardíacos.",
+            "Quando seus batimentos cardíacos estão muito rápidos, isso pode ser um sinal de que seu coração está trabalhando mais do que o normal. Isso é importante prestar atenção, pois pode ser um indicativo de várias condições de saúde. Se você está sentindo seus batimentos cardíacos acelerados e isso não está relacionado a atividades físicas intensas, como exercícios, aqui estão algumas ações que você deve considerar:\n\n1. Avalie a sua situação: Verifique se você está se sentindo bem em geral. Se estiver com outros sintomas preocupantes, como tontura, falta de ar ou dor no peito, procure ajuda médica imediatamente.\n\n2. Descanse e relaxe: Às vezes, o estresse e a ansiedade podem aumentar a frequência cardíaca. Tente relaxar, respirar profundamente e afastar-se de situações estressantes.\n\n3. Hidrate-se: A desidratação também pode afetar a frequência cardíaca. Beba água para garantir que você esteja bem hidratado.\n\n4. Procure ajuda médica: Se seus batimentos cardíacos rápidos persistirem ou se você tiver outros sintomas graves, é aconselhável procurar orientação médica. Se for um episódio agudo ou você estiver em um ambiente médico, a equipe médica poderá fornecer o tratamento adequado.\n\nLembre-se de que a frequência cardíaca rápida pode ser causada por uma série de fatores, e a avaliação de um profissional de saúde é essencial para determinar a causa e o tratamento adequado. Não hesite em procurar ajuda se você estiver preocupado com seus batimentos cardíacos.",
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
